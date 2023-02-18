@@ -1,0 +1,20 @@
+{
+  "name": "kanbanboard",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RabbitSam/KanbanBoard.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RabbitSam/KanbanBoard/issues"
+  },
+  "homepage": "https://github.com/RabbitSam/KanbanBoard#readme"
+}
