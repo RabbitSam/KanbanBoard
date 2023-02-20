@@ -4,16 +4,11 @@ import 'bootstrap/dist/css/bootstrap.css';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import Column from './Components/Column';
 
-const BASE_TASK_STRUCTURE = {
-  id: "0",
-  title: "New Task"
-};
 
 function App() {
   const [columnOrder, setColumnOrder] = useState([]);
   const [columnId, setColumnId] = useState(0);
   const [taskId, setTaskId] = useState(0);
-  
   const [columns, setColumns] = useState({});
 
   const onDragEnd = result => {
@@ -23,13 +18,12 @@ function App() {
       return;
     }
 
+    // Won't have to do anything if the item being dropped is being put to the same location it was.
     if (source.droppableId === destination.droppableId && source.index === destination.index) {
       return;
     }
 
-    //Check type of dragging
     if (type === "task") {
-      // Check if the source and destination are the same
       if (source.droppableId === destination.droppableId) {
         // Move Tasks around
         const columnCopy = {...columns[source.droppableId]};
@@ -45,7 +39,7 @@ function App() {
         setColumns({
           ...columns,
           [source.droppableId]: newColumn
-        })
+        });
 
       } else if (source.droppableId !== destination.droppableId) {
 
@@ -82,8 +76,9 @@ function App() {
     }
   };
 
+  // Column Functions
   const addColumn = () => {
-    const newId = `c-${columnId.toString()}`;
+    const newColumnId = `c-${columnId.toString()}`;
 
     const newColumn = {
       title: "New List",
@@ -92,44 +87,58 @@ function App() {
 
     const newColumns = {
       ...columns,
-      [newId]: newColumn
+      [newColumnId]: newColumn
     }
 
     const newColumnOrder = [...columnOrder];
-    newColumnOrder.push(newId);
+    newColumnOrder.push(newColumnId);
 
     setColumns(newColumns);
     setColumnOrder(newColumnOrder);
     setColumnId(columnId + 1);
   };
 
-  const addTask = (id) => {
+  const renameColumn = (e, columnId) => {
+    const newColumn = {
+      ...columns[columnId],
+      title: e.target.value
+    };
+
+    const newColumns = {
+      ...columns,
+      [columnId]: newColumn
+    }
+
+    setColumns(newColumns);
+  };
+
+  // Task Functions
+  const addTask = (columnId) => {
     const newTaskId = `t-${taskId.toString()}`;
 
     const newTask = {
-      ...BASE_TASK_STRUCTURE,
       id: newTaskId,
       title: `New Task ${newTaskId}`
     };
 
-    const columnCopy = {...columns[id]};
+    const columnCopy = {...columns[columnId]};
 
     columnCopy.tasks.push(newTask);
 
     setColumns({
       ...columns,
-      [id]: columnCopy
+      [columnId]: columnCopy
     });
     setTaskId(taskId + 1);
   };
 
   return (
-    <div className="list-group list-group-horizontal my-2 mx-3">
+    <div className="list-group list-group-horizontal mt-2 mx-3">
       <DragDropContext onDragEnd={onDragEnd}>
         <Droppable droppableId="columns" direction="horizontal" type="column">
           {(provided) => (
             <div
-              className="list-group list-group-horizontal"
+              className="list-group list-group-horizontal overflow-y-hidden"
               {...provided.droppableProps}
               ref={provided.innerRef}
             >
@@ -140,6 +149,7 @@ function App() {
                   onTaskAdd={addTask}
                   {...columns[cid]}
                   index={index}
+                  onNameChange={renameColumn}
                 />
               ))}
               {provided.placeholder}
