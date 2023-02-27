@@ -1,0 +1,4 @@
+.my-modal {
+    background-color: rgb(0, 0, 0) !important; /*Fallback to pure black*/
+    background-color: rgba(0, 0, 0, 0.7) !important;
+}

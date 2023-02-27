@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import Task from './Task';
+import "./css/List.css";
 
-function Column(props) {
+function List(props) {
     const [isEditingName, setIsEditingName] = useState(false);
     const inputReference = useRef();
 
+    // If the user is editing, then focus on the input as soon as it renders.
     useEffect(() => {
         if (inputReference.current) {
             inputReference.current.focus();
@@ -18,7 +20,7 @@ function Column(props) {
     };
 
     // Name Edit Functions
-    const onDoubleClick = e => {
+    const onClick = e => {
         e.preventDefault();
         setIsEditingName(true);
     };
@@ -37,7 +39,15 @@ function Column(props) {
         setIsEditingName(false);
     };
 
-    //
+    // Task Edit functions
+    const onTaskClick = (index) => {
+        props.onTaskClick(props.id, index);
+    };
+
+    //Style
+    const style = {
+        maxWidth: "250px"
+    };
 
     return (
         <Draggable 
@@ -46,37 +56,45 @@ function Column(props) {
         >
             {(provided) => (
                 <div
-                    className="m-2 border rounded-1 pb-2 bg-white"
+                    className="m-1 border rounded-1 bg-white"
                     {...provided.draggableProps}
                     ref={provided.innerRef}
                 >
                     {
                         !isEditingName &&
-                        <h4 
-                            className="text-truncate py-2 px-2"
+                        <div 
+                            className="px-2 pt-2"
+                            style={style}
                             {...provided.dragHandleProps}
-                            onDoubleClick={onDoubleClick}
-                            style={{
-                                maxWidth: "250px"
-                            }}
                         >
-                            {props.title}
-                        </h4>
+                            <h5
+                                className="column-title text-truncate py-2 px-2 rounded"
+                                onClick={onClick}
+                            >
+                                {props.title}
+                            </h5>
+                        </div>
                     }
                     {
                         isEditingName &&
-                        <form style={{maxWidth: "250px"}} onSubmit={onSubmit}>
-                            <label for="listName" className="visually-hidden">Enter New Title</label>
-                            <input
-                                ref={inputReference}
-                                className="p-2 form-control fs-4"
-                                id="listName"
-                                type="text"
-                                value={props.title}
-                                onChange={onNameChange}
-                                onBlur={onBlur}
-                            />
-                        </form>
+                        <div 
+                            className="px-2 py-2"
+                            {...provided.dragHandleProps} 
+                            style={style}
+                        >
+                            <form onSubmit={onSubmit}>
+                                <label htmlFor="listName" className="visually-hidden">Enter New Title</label>
+                                <input
+                                    ref={inputReference}
+                                    className="px-2 form-control fs-5 lh-sm"
+                                    id="listName"
+                                    type="text"
+                                    value={props.title}
+                                    onChange={onNameChange}
+                                    onBlur={onBlur}
+                                />
+                            </form>
+                        </div>
                     }
                     <div
                         style={{
@@ -87,13 +105,13 @@ function Column(props) {
                         <Droppable droppableId={props.id} direction="vertical" type="task">
                             {(provided) => (
                                 <div
-                                    className="border border-start-0 border-end-0 p-2 bg-light bg-light-subtle"
+                                    className="border-top border-bottom px-2 py-1 bg-light bg-light-subtle"
                                     {...provided.droppableProps}
                                     ref={provided.innerRef}
                                     style={{
                                         overflowY: "auto",
                                         overflowX: "hidden",
-                                        maxHeight: "82vh",
+                                        maxHeight: "81vh",
                                         marginBottom: "5px"
                                     }}
                                 >
@@ -103,6 +121,7 @@ function Column(props) {
                                                 key={task.id}
                                                 index={index}
                                                 {...task}
+                                                onTaskClick={onTaskClick}
                                             />
                                         ))
                                     }
@@ -110,8 +129,10 @@ function Column(props) {
                                 </div>
                             )}
                         </Droppable>
-                        <div className='container' style={{width:"100%"}}>
-                            <input type="button" className='btn btn-light' value="Add Item" style={{width: "100%"}} onClick={addTask}/>
+                        <div className="d-grid px-2 pb-2 pt-1" style={{width:"100%"}}>
+                            <button type="button" className="btn btn-add" style={{width: "100%"}} onClick={addTask}>
+                                <i className="bi bi-plus"></i> Add Task
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -120,4 +141,4 @@ function Column(props) {
     );
 }
 
-export default Column;
+export default List;

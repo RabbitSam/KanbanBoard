@@ -1,0 +1,14 @@
+.column-title:hover {
+    background-color: lightgray;
+    cursor: pointer;
+}
+
+.btn-add {
+    background-color: white !important; 
+    border: 1px solid lightgrey !important;
+    text-align: left !important;
+}
+
+.btn-add:hover {
+    background-color: lightgrey !important;
+}
