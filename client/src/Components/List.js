@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Draggable, Droppable } from 'react-beautiful-dnd';
 import Task from './Task';
 import "./css/List.css";

@@ -1,4 +1,3 @@
-import React from "react";
 import "./css/Modal.css"
 
 export default function Modal(props) {

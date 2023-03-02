@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
-import './App.css';
+import { useState } from 'react';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import List from './Components/List';
-import Modal from './Components/Modal';
+import List from './List';
+import Modal from './Modal';
 
 
-function App() {
+function Board() {
     const [columnOrder, setColumnOrder] = useState([]);
     const [columnId, setColumnId] = useState(0);
     const [taskId, setTaskId] = useState(0);
@@ -115,7 +114,7 @@ function App() {
     };
 
     // Task Functions
-    const addTask = (columnId) => {
+    const addTask = columnId => {
         const newTaskId = `t-${taskId.toString()}`;
 
         const newTask = {
@@ -251,4 +250,4 @@ function App() {
     );
 }
 
-export default App;
+export default Board;
