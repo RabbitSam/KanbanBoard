@@ -1,0 +1,9 @@
+.card-hover:hover {
+    transform: scale(1.025) !important;
+    transition: transform 100ms;
+}
+
+#add-board {
+    bottom: 20px;
+    z-index: 100;
+}

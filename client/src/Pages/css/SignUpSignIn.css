@@ -1,0 +1,24 @@
+.sign-form {
+    max-width: 330px;
+    padding: 15px;
+}
+
+.first-input {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.last-input {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+
+#sign-in-show-password {
+    border-top-right-radius: 0;
+}
+
+#sign-in-show-password:hover {
+    background-color: var(--bs-secondary);
+    color: white;
+    cursor: pointer;
+}
