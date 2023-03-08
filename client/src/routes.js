@@ -5,6 +5,8 @@ import {SignUp, SignIn} from "./Pages/SignUpSignIn";
 import Root from "./Pages/Root";
 import SignOut from "./Pages/SignOut";
 import Boards from "./Pages/Boards";
+import { boardLoader, boardsLoader } from "./Loaders/BoardLoader";
+import ViewBoard from "./Pages/ViewBoard";
 
 
 const router = createBrowserRouter([
@@ -23,11 +25,13 @@ const router = createBrowserRouter([
             },
             {
                 path: "/boards",
-                element: <Boards />
+                element: <Boards />,
+                loader: boardsLoader
             },
             {
-                boards: "/boards/:boardId",
-                element: <div></div>
+                path: "/boards/:boardId",
+                element: <ViewBoard />,
+                loader: boardLoader
             }
         ]
     },

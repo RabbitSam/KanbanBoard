@@ -4,10 +4,10 @@
 
 #logo-3 {
     font-weight: 600;
-    
+    font-size: calc(100% + 1px);
 }
 
 #logo {
-    letter-spacing: -0.45rem;
+    letter-spacing: -0.4rem;
     user-select: none;
 }

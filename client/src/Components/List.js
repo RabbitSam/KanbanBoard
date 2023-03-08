@@ -111,8 +111,9 @@ function List(props) {
                                     style={{
                                         overflowY: "auto",
                                         overflowX: "hidden",
-                                        maxHeight: "81vh",
-                                        marginBottom: "5px"
+                                        maxHeight: "calc(100vh - 303px)",
+                                        minHeight: "calc(100vh - 303px)"
+                                        // marginBottom: "5px"
                                     }}
                                 >
                                     {

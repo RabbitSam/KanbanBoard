@@ -1,16 +1,24 @@
 import Logo from "../Components/Logo";
-import { Link, NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigation } from "react-router-dom";
+import "./css/Root.css";
 
 export default function Root() {
     const getNavClass = ({isActive, isPending}) => (
         isActive ? "nav-link active" : isPending ? "nav-link" : "nav-link"
     );
 
+    const navigation = useNavigation();
+
+    const getNavState = () => {
+        console.log(navigation.state);
+        return navigation.state;  
+    };
+
     return (
         <div>
             <nav className="navbar navbar-dark navbar-expand-lg bg-primary">
                 <div className="container-fluid">
-                    <Link className="navbar-brand text-white" to="/"><Logo/></Link>
+                    <Link className="navbar-brand text-white lh-sm" to="/"><Logo/></Link>
                     <button className="navbar-toggler"
                         type="button" 
                         data-bs-toggle="collapse"
@@ -38,12 +46,28 @@ export default function Root() {
                                     About
                                 </NavLink>
                             </li>
+                            <li className="nav-item">
+                                <NavLink className={getNavClass} to="/boards">
+                                    Boards [test]
+                                </NavLink>
+                            </li>
                         </ul>
                     </div>
                 </div>
             </nav>
             <div>
-                <Outlet/>
+                {
+                    getNavState() === "loading" ? (
+                        <div id="loading-div">
+                            <div className="spinner-border text-primary" role="status">
+                                <span className="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    )
+                    : (
+                        <Outlet/>
+                    )
+                }
             </div>
         </div>
     );

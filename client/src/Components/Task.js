@@ -11,7 +11,7 @@ export default function Task(props) {
         <Draggable draggableId={props.id} index={props.index}>
             {(provided) => (
                 <div 
-                    className="task my-2 p-2 border rounded-3 text-truncate"
+                    className="task my-2 p-2 border rounded-3 text-truncate lh-sm"
                     style={{
                         maxWidth: "200px"
                     }}

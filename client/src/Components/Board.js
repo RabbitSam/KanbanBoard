@@ -4,11 +4,11 @@ import List from './List';
 import Modal from './Modal';
 
 
-function Board() {
-    const [columnOrder, setColumnOrder] = useState([]);
-    const [columnId, setColumnId] = useState(0);
-    const [taskId, setTaskId] = useState(0);
-    const [columns, setColumns] = useState({});
+function Board({ board }) {
+    const [columnOrder, setColumnOrder] = useState([...board.columnOrder]);
+    const [columnId, setColumnId] = useState(1000);
+    const [taskId, setTaskId] = useState(1000);
+    const [columns, setColumns] = useState({...board.columns});
     const [isEditingTask, setIsEditingTask] = useState(false);
     const [editTaskCopy, setEditTaskCopy] = useState({});
 
@@ -186,10 +186,10 @@ function Board() {
     };
 
     return (
-        <div className="container-fluid"
-            style={{
-                overflowX: (isEditingTask ? "hidden" : "visible")
-            }}
+        <div className="container-fluid ps-0"
+            // style={{
+            //     overflowX: (isEditingTask ? "hidden" : "visible")
+            // }}
         >
             <Modal isShowing={isEditingTask} onCancel={cancelEditTask} title={"View/Edit Task"}>
                 <form onSubmit={onTaskChangeSave}>
@@ -217,7 +217,7 @@ function Board() {
                     </div>
                 </form>
             </Modal>
-            <div className="list-group list-group-horizontal mt-2 mx-3">
+            <div className="list-group list-group-horizontal mt-2">
                 <DragDropContext onDragEnd={onDragEnd}>
                     <Droppable droppableId="columns" direction="horizontal" type="column">
                         {(provided) => (
@@ -242,7 +242,7 @@ function Board() {
                         )}
                     </Droppable>
                 </DragDropContext>
-                <div className="m-2">
+                <div className="m-2 pe-2">
                     <input type="button" value="Add Column" className="btn btn-secondary" onClick={addColumn}/>
                 </div>
             </div>
