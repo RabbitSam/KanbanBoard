@@ -1,6 +1,8 @@
-import { Link } from "react-router-dom";
+import { Link, useLoaderData } from "react-router-dom";
 
 export default function SignOut() {
+    useLoaderData();
+
     return (
         <div className="px-4 py-5 my-5 text-center">
             <h1 className="display-5 fw-bold">See you soon!</h1>
@@ -9,7 +11,7 @@ export default function SignOut() {
                     You've signed out successfully. See you next time!
                 </p>
                 <div className="d-grid justify-content-center">
-                    <Link to="/sign-up" className="btn btn-primary">Sign up - it's completely free!</Link>
+                    <Link to="/" className="btn btn-primary">Go back to home</Link>
                 </div>
             </div>
         </div>

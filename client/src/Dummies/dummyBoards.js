@@ -1,27 +1,27 @@
 export const dummyBoards = [
     {
         id: "1",
-        name: "Hello 123",
+        title: "Hello 123",
         description: ""
     },
     {
         id: "2",
-        name: "Hello 234",
+        title: "Hello 234",
         description: "Hello darkness my old friend"
     },
     {
         id: "3",
-        name: "Hello 345",
+        title: "Hello 345",
         description: "Hello darkness my old friend"
     },
     {
         id: "4",
-        name: "Hello 456",
+        title: "Hello 456",
         description: "Hello darkness my old friend. I've come to talk to you again. Because a vision softly creeping. Lifted sounds while I was sleeping and the vision that was planted in my brain still remains within the sound of silence."
     },
     {
         id: "5",
-        name: "Hello 567",
+        title: "Hello 567",
         description: "Hello from the other side. I must've called a thousand times, to tell you that I'm sorry for the things that I've done. When I call, you never seem to be home anymore."
     }
 ];
@@ -29,7 +29,7 @@ export const dummyBoards = [
 
 export const dummyLists = {
     "1": {
-        name: "Hello 123",
+        title: "Hello 123",
         description: "",
         columnOrder: ["c-1", "c-3", "c-2", "c-4"],
         columns: {
@@ -57,12 +57,12 @@ export const dummyLists = {
                 tasks: [
                     {
                         id: "t-4",
-                        title: "I am a task",
+                        title: "I am a task 4",
                         description: "No one, it's just a thingy."
                     },
                     {
                         id: "t-0",
-                        title: "I am another task",
+                        title: "I am another task 5",
                         description: "What kind of thingy?"
                     },
                 ]
@@ -79,7 +79,7 @@ export const dummyLists = {
         }
     },
     "2": {
-        name: "Hello 234",
+        title: "Hello 234",
         description: "Hello darkness my old friend",
         columnOrder: ["c-2", "c-1"],
         columns: {
@@ -105,7 +105,7 @@ export const dummyLists = {
         }
     },
     "3": {
-        name: "Hello 345",
+        title: "Hello 345",
         description: "Hello darkness my old friend",
         columnOrder: ["c-1", "c-3", "c-2"],
         columns: {
@@ -146,7 +146,7 @@ export const dummyLists = {
         }
     },
     "4": {
-        name: "Hello 456",
+        title: "Hello 456",
         description: "Hello darkness my old friend. I've come to talk to you again. Because a vision softly creeping. Lifted sounds while I was sleeping and the vision that was planted in my brain still remains within the sound of silence.",
         columnOrder: ["c-1", "c-3", "c-2", "c-4"],
         columns: {
@@ -196,7 +196,7 @@ export const dummyLists = {
         }
     },
     "5": {
-        name: "Hello 567",
+        title: "Hello 567",
         description: "Hello from the other side. I must've called a thousand times, to tell you that I'm sorry for the things that I've done. When I call, you never seem to be home anymore.",
         columnOrder: ["c-1", "c-3", "c-2", "c-4"],
         columns: {

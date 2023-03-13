@@ -1,20 +1,64 @@
-import { Link, useLoaderData } from "react-router-dom";
+import { useState } from "react";
+import { Link, useLoaderData, Form, useSubmit } from "react-router-dom";
+import Modal from "../Components/Modal";
 import "./css/Boards.css";
 
 export default function Boards() {
     const { boards } = useLoaderData();
-    // const [boards, setBoards] = useState([...dummyBoards]);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [boardForm, setBoardForm] = useState({
+        title: "",
+        description: ""
+    });
+    const [isEditing, setIsEditing] = useState(false);
+
+    const submit = useSubmit();
+
+    const descriptionMaxLength = 150;
 
     const addBoard = e => {
-        // e.preventDefault();
-        // const newBoards = [...boards];
-        // newBoards.push({
-        //     id: `${newBoards.length + 1}`,
-        //     name: "New Board",
-        //     description: ""
-        // });
+        e.preventDefault();
+        setBoardForm({
+            title: "",
+            description: ""
+        });
+        setIsModalVisible(true);
+        setIsEditing(false);
+    };
 
-        // setBoards(newBoards);
+    const onBoardFormCancel = (e) => {
+        e.preventDefault();
+        setIsModalVisible(false);
+        setIsEditing(false);
+    };
+
+    const onBoardFormInput = (e, field) => {
+        e.preventDefault();
+        setBoardForm({
+            ...boardForm,
+            [field]: e.target.value
+        });
+    };
+
+    const onEditBoardClicked = (e, board) => {
+        e.preventDefault();
+        setBoardForm({
+            ...board
+        });
+        setIsModalVisible(true);
+        setIsEditing(true);
+    };
+
+    const onSubmit = (e) => {
+        if (isEditing) {
+            submit({
+                //TODO: Start here
+            }, {method: "POST"})
+        }
+    } 
+
+    const onDeleteBoardClicked = (e, board) => {
+
     };
 
     return (
@@ -26,22 +70,78 @@ export default function Boards() {
                     </div>
                 </div>
                 <div className="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4">
+                    <div className="col my-2">
+                        <div 
+                            id="card-button" 
+                            className="text-decoration-none text-light card card-hover h-100 bg-secondary"
+                            onClick={addBoard}
+                        >
+                            <div className="card-body">
+                                <h2 className="card-title h5 mt-2 mt-md-3">
+                                    <i className="bi bi-plus-circle"></i> Add Board
+                                </h2>
+                            </div>
+                        </div>
+                    </div>
                     {boards.map((board, index) => (
                         <div className="col my-2" key={index}>
-                            <Link to={`/boards/${board.id}`} className="text-decoration-none text-dark card card-hover h-100">
-                                <div className="card-body">
-                                    <h2 className="card-title h5">{board.name}</h2>
-                                    <p className="card-text text-truncate">{board.description}</p>
+                            <div className="card card-hover h-100">
+                                <div className="card-body d-flex justify-content-between">
+                                    <Link to={`/boards/${board._id}`} className="text-decoration-none text-dark flex-grow-1 pe-3" style={{minWidth: "0"}}>
+                                        <h2 className="card-title h5">{board.title}</h2>
+                                        <p className="card-text text-truncate">{board.description ? board.description : <em className="text-muted">No Description</em>}</p>
+                                    </Link>
+                                    <div className="dropdown border-start rounded-0">
+                                        <button className="btn fs-5 mt-2 rounded-5 btn-outline-secondary border-0 ms-1" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i className="bi bi-three-dots-vertical"></i>
+                                            <span className="visually-hidden">Actions</span>
+                                        </button>
+                                        <ul className="dropdown-menu">
+                                            <li className="dropdown-item dropdown-action" onClick={e => onEditBoardClicked(e, board)}>Edit</li>
+                                            <li><hr className="dropdown-divider"/></li>
+                                            <li className="dropdown-item dropdown-action text-danger" onClick={onDeleteBoardClicked}>Delete</li>
+                                        </ul>
+                                    </div>
                                 </div>
-                            </Link>
+                            </div>
                         </div>
                     ))}
                 </div>
-                <button id="add-board" className="btn btn-primary rounded-pill position-sticky" onClick={addBoard}>
-                    <i className="bi bi-plus-lg"></i>&nbsp;
-                    Add Board
-                </button>
             </div>
+            <Modal
+                title={isEditing ? "Edit Board": "Add Board"}
+                isShowing={isModalVisible}
+                onCancel={onBoardFormCancel}
+            >
+                <Form onSubmit={onSubmit}>
+                    <div className="my-3">
+                        <label htmlFor="boardName" className="form-label">Board Name</label>
+                        <input id="boardName" type="text" name="title" className="form-control" 
+                            value={boardForm.title ? boardForm.title : ""}
+                            onChange={e => onBoardFormInput(e, "title")}
+                        />
+                    </div>
+                    <div className="mb-3">
+                        <label htmlFor="boardDescription" className="form-label">Description (Max. 150 characters | Optional)</label>
+                        <textarea id="boardDescription" name="description" className="form-control mh-100" rows={5} maxLength={descriptionMaxLength}
+                            onChange={e => onBoardFormInput(e, "description")}
+                            value={boardForm.description ? boardForm.description : ""}
+                        ></textarea>
+                        <div className="form-text">{boardForm.description.length}/{descriptionMaxLength}</div>
+                    </div>
+                    <div>
+                        <input type="text" name="type" value="board" className="d-none" readOnly/>
+                    </div>
+                    <div className="mb-3" style={{justifyContent: "end"}}>
+                        <input type="button" className="btn btn-secondary me-3" onClick={onBoardFormCancel} value="Cancel"/>
+                        <input type="submit" className="btn btn-primary" value={isEditing ? "Save Changes" : "Create Board"}
+                            style={{
+                                display: boardForm.title ? "inline" : "none"
+                            }}
+                        />
+                    </div>
+                </Form>
+            </Modal>
         </>
     );
 }

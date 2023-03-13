@@ -1,19 +1,15 @@
-import { useState } from 'react';
+import { Form, useSubmit } from 'react-router-dom';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
-import List from './List';
-import Modal from './Modal';
+import Column from './Column';
 
 
 function Board({ board }) {
-    const [columnOrder, setColumnOrder] = useState([...board.columnOrder]);
-    const [columnId, setColumnId] = useState(1000);
-    const [taskId, setTaskId] = useState(1000);
-    const [columns, setColumns] = useState({...board.columns});
-    const [isEditingTask, setIsEditingTask] = useState(false);
-    const [editTaskCopy, setEditTaskCopy] = useState({});
+    const columnOrder = board.columnOrder;
+
+    const submit = useSubmit();
 
     const onDragEnd = result => {
-        const {source, destination, type, draggableId} = result;
+        const {source, destination, type} = result;
 
         if (!destination) {
             return;
@@ -24,217 +20,33 @@ function Board({ board }) {
             return;
         }
 
-        if (type === "task") {
-            if (source.droppableId === destination.droppableId) {
-                // Move Tasks around
-                const columnCopy = {...columns[source.droppableId]};
-                const tasksCopy = [...columnCopy.tasks];
-                const [removed] = tasksCopy.splice(source.index, 1);
-                tasksCopy.splice(destination.index, 0, removed);
-
-                const newColumn = {
-                    ...columnCopy,
-                    tasks: tasksCopy
-                };
-
-                setColumns({
-                    ...columns,
-                    [source.droppableId]: newColumn
-                });
-
-            } else if (source.droppableId !== destination.droppableId) {
-
-                // Remove task from source column
-                const sourceColumn = {...columns[source.droppableId]};
-                const sourceTasks = [...sourceColumn.tasks];
-                const [movedTask] = sourceTasks.splice(source.index, 1);
-                
-                // Add task to destination column
-                const destinationColumn = {...columns[destination.droppableId]};
-                const destinationTasks = [...destinationColumn.tasks];
-                destinationTasks.splice(destination.index, 0, movedTask);
-
-                const newColumns = {
-                    ...columns,
-                    [source.droppableId]: {
-                        ...sourceColumn,
-                        tasks: sourceTasks
-                    },
-                    [destination.droppableId]: {
-                        ...destinationColumn,
-                        tasks: destinationTasks
-                    }
-                };
-
-                setColumns(newColumns);
-            }
-        } else if (type === "column") {
-            const newColumnOrder = [...columnOrder];
-            newColumnOrder.splice(source.index, 1);
-            newColumnOrder.splice(destination.index, 0, draggableId);
-
-            setColumnOrder(newColumnOrder);
-        }
-    };
-
-    // Column Functions
-    const addColumn = () => {
-        const newColumnId = `c-${columnId.toString()}`;
-
-        const newColumn = {
-            title: "New List",
-            tasks: []
-        };
-
-        const newColumns = {
-            ...columns,
-            [newColumnId]: newColumn
-        }
-
-        const newColumnOrder = [...columnOrder];
-        newColumnOrder.push(newColumnId);
-
-        setColumns(newColumns);
-        setColumnOrder(newColumnOrder);
-        setColumnId(columnId + 1);
-    };
-
-    const renameColumn = (e, columnId) => {
-        const newColumn = {
-            ...columns[columnId],
-            title: e.target.value
-        };
-
-        const newColumns = {
-            ...columns,
-            [columnId]: newColumn
-        }
-
-        setColumns(newColumns);
-    };
-
-    // Task Functions
-    const addTask = columnId => {
-        const newTaskId = `t-${taskId.toString()}`;
-
-        const newTask = {
-            id: newTaskId,
-            title: `New Task ${newTaskId}`,
-            description: ""
-        };
-
-        const columnCopy = {...columns[columnId]};
-
-        columnCopy.tasks.push(newTask);
-
-        setColumns({
-            ...columns,
-            [columnId]: columnCopy
-        });
-        setTaskId(taskId + 1);
-    };
-
-    const viewEditTask = (columnId, index) => {
-        // Using a copy so that the user can cancel changes
-        const task = {...columns[columnId].tasks[index]};
-        setEditTaskCopy({
-            ...task,
-            columnId,
-            index,
-            hasChanged: false
-        });
-        setIsEditingTask(true);
-    };
-
-    const onTaskChange = (e, field) => {
-        e.preventDefault();
-        setEditTaskCopy({
-            ...editTaskCopy,
-            [field]: e.target.value,
-            hasChanged: true
-        });
-    };
-
-    const onTaskChangeSave = e => {
-        e.preventDefault();
-        const {columnId, index, title, description, hasChanged} = editTaskCopy;
-        if (hasChanged) {
-            const columnCopy = {...columns[columnId]};
-            const tasksCopy = [...columnCopy.tasks];
-            tasksCopy[index] = {
-                ...tasksCopy[index],
-                title, description
-            };
-
-            setColumns({
-                ...columns,
-                [columnId]: {
-                    ...columns[columnId],
-                    tasks: tasksCopy
-                }
-            });
-
-            setEditTaskCopy({});
-            setIsEditingTask(false);
-        }
-    };
-
-    const cancelEditTask = e => {
-        e.preventDefault();
-        setEditTaskCopy({});
-        setIsEditingTask(false);
+        submit({
+            type: "BOARD",
+            editType: "REORDER",
+            reorderType: type,
+            sourceJson: JSON.stringify(source),
+            destinationJson: JSON.stringify(destination),
+        }, {method: "POST"});
     };
 
     return (
-        <div className="container-fluid ps-0"
-            // style={{
-            //     overflowX: (isEditingTask ? "hidden" : "visible")
-            // }}
-        >
-            <Modal isShowing={isEditingTask} onCancel={cancelEditTask} title={"View/Edit Task"}>
-                <form onSubmit={onTaskChangeSave}>
-                    <div className="my-3">
-                        <label htmlFor="taskName" className="form-label">Task Name</label>
-                        <input id="taskName" type="text" className="form-control" 
-                            value={editTaskCopy.title ? editTaskCopy.title : ""}
-                            onChange={e => onTaskChange(e, "title")}
-                        />
-                    </div>
-                    <div className="mb-3">
-                        <label htmlFor="taskDescription" className="form-label">Description</label>
-                        <textarea id="taskDescription" className="form-control mh-100" rows={5}
-                            onChange={e => onTaskChange(e, "description")}
-                            value={editTaskCopy.description ? editTaskCopy.description : ""}
-                        ></textarea>
-                    </div>
-                    <div className="mb-3" style={{justifyContent: "end"}}>
-                        <input type="button" className="btn btn-secondary me-3" onClick={cancelEditTask} value="Close"/>
-                        <input type="submit" className="btn btn-primary" value="Save Changes"
-                            style={{
-                                display: editTaskCopy.hasChanged ? "inline" : "none"
-                            }}
-                        />
-                    </div>
-                </form>
-            </Modal>
+        <div className="container-fluid ps-0">
             <div className="list-group list-group-horizontal mt-2">
                 <DragDropContext onDragEnd={onDragEnd}>
-                    <Droppable droppableId="columns" direction="horizontal" type="column">
+                    <Droppable droppableId="b-columns" direction="horizontal" type="columns">
                         {(provided) => (
                             <div
                                 className="list-group list-group-horizontal"
                                 {...provided.droppableProps}
                                 ref={provided.innerRef}
                             >
-                                {columnOrder.map((cid, index) => (
-                                    <List 
-                                        key={cid}
-                                        id={cid}
-                                        onTaskAdd={addTask}
-                                        {...columns[cid]}
+                                {columnOrder.map((column, index) => (
+                                    <Column 
+                                        key={`c-${column._id}`}
+                                        id={`c-${column._id}`}
+                                        title={column.title}
+                                        tasks={column.tasks}
                                         index={index}
-                                        onNameChange={renameColumn}
-                                        onTaskClick={viewEditTask}
                                     />
                                 ))}
                                 {provided.placeholder}
@@ -243,7 +55,12 @@ function Board({ board }) {
                     </Droppable>
                 </DragDropContext>
                 <div className="m-2 pe-2">
-                    <input type="button" value="Add Column" className="btn btn-secondary" onClick={addColumn}/>
+                    <Form method="PUT">
+                        <div className="d-none">
+                            <input type="text" name="type" value="COLUMN" readOnly/>
+                        </div>
+                        <input type="submit" value="Add Column" className="btn btn-secondary"/>
+                    </Form>
                 </div>
             </div>
         </div>

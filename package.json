@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/RabbitSam/KanbanBoard/issues"
   },
-  "homepage": "https://github.com/RabbitSam/KanbanBoard#readme"
+  "homepage": "https://github.com/RabbitSam/KanbanBoard#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
 }

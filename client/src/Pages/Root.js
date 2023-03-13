@@ -1,6 +1,7 @@
 import Logo from "../Components/Logo";
 import { Link, NavLink, Outlet, useNavigation } from "react-router-dom";
 import "./css/Root.css";
+import isLoggedIn from "../Functions/isLoggedIn";
 
 export default function Root() {
     const getNavClass = ({isActive, isPending}) => (
@@ -9,10 +10,6 @@ export default function Root() {
 
     const navigation = useNavigation();
 
-    const getNavState = () => {
-        console.log(navigation.state);
-        return navigation.state;  
-    };
 
     return (
         <div>
@@ -32,23 +29,24 @@ export default function Root() {
                     <div className={`collapse navbar-collapse`} id="rootContent">
                         <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
                             <li className="nav-item">
-                                <NavLink className={getNavClass} to="/" aria-current="page">
+                                <NavLink className={getNavClass} to="/" aria-current="page" end>
                                     Home
                                 </NavLink>
                             </li>
                             <li className="nav-item">
-                                <NavLink className={getNavClass} to="/sign-in">
-                                    Sign In
-                                </NavLink>
+                                {!isLoggedIn() ? (
+                                    <NavLink className={getNavClass} to="/sign-in">
+                                        Sign In
+                                    </NavLink>
+                                ) : (
+                                    <NavLink className={getNavClass} to="/sign-out">
+                                        Sign Out
+                                    </NavLink>
+                                )}
                             </li>
                             <li className="nav-item">
                                 <NavLink className={getNavClass} to="/about">
                                     About
-                                </NavLink>
-                            </li>
-                            <li className="nav-item">
-                                <NavLink className={getNavClass} to="/boards">
-                                    Boards [test]
                                 </NavLink>
                             </li>
                         </ul>
@@ -57,17 +55,15 @@ export default function Root() {
             </nav>
             <div>
                 {
-                    getNavState() === "loading" ? (
+                    (navigation.state === "loading" || navigation.state === "submitting") && (
                         <div id="loading-div">
-                            <div className="spinner-border text-primary" role="status">
+                            <div id="spinner" className="spinner-border text-primary" role="status">
                                 <span className="visually-hidden">Loading...</span>
                             </div>
                         </div>
                     )
-                    : (
-                        <Outlet/>
-                    )
                 }
+                <Outlet/>
             </div>
         </div>
     );

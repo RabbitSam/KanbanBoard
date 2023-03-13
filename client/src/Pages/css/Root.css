@@ -1,5 +1,16 @@
 #loading-div {
     position: absolute;
+    background: rgba(0, 0, 0, 0.7);
+    width: 100vw;
+    height: 100vh;
+    z-index: 100000;
+    top: 0px;
+    left: 0px;
+}
+
+#spinner {
+    position: absolute;
     top: 50%;
     left: 50%;
+    z-index: 100000000;
 }
