@@ -74,7 +74,7 @@ export default function Task(props) {
                         ></textarea>
                     </div>
                     <div className="mb-3" style={{justifyContent: "end"}}>
-                        <input type="button" className="btn btn-secondary me-3" onClick={onCancelClicked} value={taskCopy.hasChanged ? "Cancel" : "Close"}/>
+                        <input type="button" className="btn btn-secondary me-1" onClick={onCancelClicked} value={taskCopy.hasChanged ? "Cancel" : "Close"}/>
                         <input type="submit" className="btn btn-primary" value="Save Changes"
                             style={{
                                 display: taskCopy.hasChanged ? "inline" : "none"

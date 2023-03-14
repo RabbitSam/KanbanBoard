@@ -6,10 +6,11 @@ export default function Modal(props) {
     };
     
     return (
-        <div className="container-fluid my-modal h-100 z-1 position-absolute top-0 start-0" 
+        <div className="container-fluid my-modal h-100 position-absolute top-0 start-0" 
             style={{
                 display: (props.isShowing ? "block" : "none"),
-                overflowY: "hidden"
+                overflowY: "hidden",
+                zIndex: 1055
             }}
         >
             <div className="row mt-5 justify-content-center">

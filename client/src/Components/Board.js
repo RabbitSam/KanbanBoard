@@ -54,12 +54,17 @@ function Board({ board }) {
                         )}
                     </Droppable>
                 </DragDropContext>
-                <div className="m-2 pe-2">
+                <div className="m-1 pe-2 d-grid" style={{
+                    maxWidth: "250px",
+                    minWidth: "250px"
+                }}>
                     <Form method="PUT">
                         <div className="d-none">
                             <input type="text" name="type" value="COLUMN" readOnly/>
                         </div>
-                        <input type="submit" value="Add Column" className="btn btn-secondary"/>
+                        <button type="submit" className="btn btn-secondary fs-5 col-12 text-start lh-lg py-2">
+                            <i className="bi bi-plus-circle"></i> <span className="fs-6">Add Column</span>
+                        </button>
                     </Form>
                 </div>
             </div>

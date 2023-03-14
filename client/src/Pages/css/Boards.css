@@ -1,6 +1,6 @@
 .card-hover:hover {
     transition: outline 100ms;
-    outline: 5px solid rgba(13, 110, 253, 0.3)
+    outline: 5px solid rgba(var(--bs-primary-rgb), 0.3)
 }
 
 #add-board {
@@ -10,8 +10,5 @@
 
 #card-button:hover {
     cursor: pointer;
-}
-
-.dropdown-action:hover {
-    cursor: pointer;
+    background-color: #5c636a !important;
 }

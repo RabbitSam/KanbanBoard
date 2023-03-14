@@ -57,6 +57,42 @@ export async function boardsAction({request}) {
 
             return redirect(`/boards/${data.boardId}`);
         }
+        case "POST": {
+            const formData = await request.formData();
+            const { _id, title, description } = Object.fromEntries(formData);
+
+            const response = await fetch(`/boards/${_id}`, {
+                method: "post",
+                headers: {
+                    "Content-Type": "application/json",
+                    "x-access-token": localStorage.getItem("token")
+                },
+                body: JSON.stringify({title, description})
+            });
+
+            if (!response.ok) {
+                throw response;
+            }
+
+            return response;
+        }
+        case "DELETE": {
+            const formData = await request.formData();
+            const { _id } = Object.fromEntries(formData);
+
+            const response = await fetch(`/boards/${_id}`, {
+                method: "delete",
+                headers: {
+                    "x-access-token": localStorage.getItem("token")
+                }
+            });
+
+            if (!response.ok) {
+                throw response;
+            }
+
+            return response;
+        }
         default : {
             throw new Response("", { status: 405 });
         }
@@ -67,9 +103,11 @@ export async function boardsAction({request}) {
 export async function boardContainerAction({request, params}) {
     const formData = await request.formData();
     const type = formData.get("type");
+
+    // Having to use task types to compartmentalize, there's probably a better way of doing this...
     if (type === "TASK") return handleTaskRequest(request.method, formData, params);
     else if (type === "COLUMN") return handleColumnRequest(request.method, formData, params);
-    else if (type === "BOARD") return handleBoardRequest(request.method, formData, params);
+    else if (type === "BOARD") return handleBoardContainerRequest(request.method, formData, params);
 }
 
 
@@ -150,9 +188,24 @@ async function handleColumnRequest(method, formData, params) {
             });
 
             if (!response.ok) {
-                throw response
+                throw response;
             }
             
+            return response;
+        }
+        case "DELETE": {
+            const {columnId} = Object.fromEntries(formData);
+            const response = await fetch(`/boards/${boardId}/columns/${columnId}`, {
+                method: "delete",
+                headers: {
+                    "x-access-token": localStorage.getItem("token")
+                }
+            });
+
+            if (!response.ok) {
+                throw response;
+            }
+
             return response;
         }
         default : {
@@ -162,18 +215,20 @@ async function handleColumnRequest(method, formData, params) {
 }
 
 
-async function handleBoardRequest(method, formData, params) {
+async function handleBoardContainerRequest(method, formData, params) {
     const boardId = params.boardId;
-    const { editType, reorderType, sourceJson, destinationJson } = Object.fromEntries(formData);
-    const source = JSON.parse(sourceJson);
-    const destination = JSON.parse(destinationJson);
-
-    source.droppableId = source.droppableId.substr(2);
-    destination.droppableId = destination.droppableId.substr(2);
+    const formObj = Object.fromEntries(formData);
 
     switch (method) {
         case "POST": {
+            const editType = formObj.editType;
             if (editType === "REORDER") {
+                const { reorderType, sourceJson, destinationJson } = formObj;
+                const source = JSON.parse(sourceJson);
+                const destination = JSON.parse(destinationJson);
+
+                source.droppableId = source.droppableId.substr(2);
+                destination.droppableId = destination.droppableId.substr(2);
                 const response = await fetch(`/boards/${boardId}/reorder/${reorderType}`, {
                     method: "post",
                     headers: {
@@ -188,8 +243,38 @@ async function handleBoardRequest(method, formData, params) {
                 }
 
                 return response;
-            }        
+            } else if (editType === "EDIT") {
+                const { title, description } = formObj;
+                const response = await fetch(`/boards/${boardId}`, {
+                    method: "post",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "x-access-token": localStorage.getItem("token")
+                    },
+                    body: JSON.stringify({ title, description })
+                });
+
+                if (!response.ok) {
+                    throw response;
+                }
+
+                return response;
+            }
             return new Response("", {status: 405});
+        }
+        case "DELETE": {
+            const response = await fetch(`/boards/${boardId}`, {
+                method: "delete",
+                headers: {
+                    "x-access-token": localStorage.getItem("token")
+                }
+            });
+
+            if (!response.ok) {
+                throw response;
+            }
+
+            return redirect("/");
         }
 
         default : {

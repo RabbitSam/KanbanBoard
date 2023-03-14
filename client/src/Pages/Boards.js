@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLoaderData, Form, useSubmit } from "react-router-dom";
+import { Link, useLoaderData, Form, useSubmit, useNavigation } from "react-router-dom";
 import Modal from "../Components/Modal";
 import "./css/Boards.css";
 
@@ -11,12 +11,14 @@ export default function Boards() {
         description: ""
     });
     const [isEditing, setIsEditing] = useState(false);
+    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
 
     const submit = useSubmit();
+    const navigation = useNavigation();
 
     const descriptionMaxLength = 150;
 
-    const addBoard = e => {
+    const onAddBoardClicked = e => {
         e.preventDefault();
         setBoardForm({
             title: "",
@@ -24,6 +26,24 @@ export default function Boards() {
         });
         setIsModalVisible(true);
         setIsEditing(false);
+    };
+
+    const onEditBoardClicked = (e, board) => {
+        e.preventDefault();
+        setBoardForm({
+            ...board
+        });
+        setIsModalVisible(true);
+        setIsEditing(true);
+    };
+
+    const onDeleteBoardClicked = (e, board) => {
+        e.preventDefault();
+        console.log(board);
+        setBoardForm({
+            ...board
+        });  
+        setIsDeleteModalVisible(true);
     };
 
     const onBoardFormCancel = (e) => {
@@ -40,25 +60,37 @@ export default function Boards() {
         });
     };
 
-    const onEditBoardClicked = (e, board) => {
+    const onSubmit = e => {
         e.preventDefault();
-        setBoardForm({
-            ...board
-        });
-        setIsModalVisible(true);
-        setIsEditing(true);
-    };
-
-    const onSubmit = (e) => {
+        setIsModalVisible(false);
+        setIsEditing(false);
         if (isEditing) {
             submit({
-                //TODO: Start here
-            }, {method: "POST"})
+                ...boardForm
+            }, {method: "POST"});
+        } else {
+            submit({
+                ...boardForm
+            }, {method: "PUT"});
         }
-    } 
+    };
 
-    const onDeleteBoardClicked = (e, board) => {
+    const onDeleteBoardCanceled = e => {
+        e.preventDefault();
+        setBoardForm({
+            title: "",
+            description: ""
+        });
+        setIsDeleteModalVisible(false);
+    };
 
+    const onDeleteBoardSubmit = e => {
+        e.preventDefault();
+        setIsDeleteModalVisible(false);
+        submit({
+            ...boardForm
+        }, {method: "delete"});
+        
     };
 
     return (
@@ -73,8 +105,8 @@ export default function Boards() {
                     <div className="col my-2">
                         <div 
                             id="card-button" 
-                            className="text-decoration-none text-light card card-hover h-100 bg-secondary"
-                            onClick={addBoard}
+                            className="text-decoration-none text-light card h-100 bg-secondary"
+                            onClick={onAddBoardClicked}
                         >
                             <div className="card-body">
                                 <h2 className="card-title h5 mt-2 mt-md-3">
@@ -88,18 +120,24 @@ export default function Boards() {
                             <div className="card card-hover h-100">
                                 <div className="card-body d-flex justify-content-between">
                                     <Link to={`/boards/${board._id}`} className="text-decoration-none text-dark flex-grow-1 pe-3" style={{minWidth: "0"}}>
-                                        <h2 className="card-title h5">{board.title}</h2>
-                                        <p className="card-text text-truncate">{board.description ? board.description : <em className="text-muted">No Description</em>}</p>
+                                        <h2 className={`card-title h5 text-truncate ${navigation.state === "idle" ? "" : "placeholder-glow"}`}>
+                                            <span className={navigation.state === "idle" ? "": "placeholder"}>{board.title}</span>
+                                        </h2>
+                                        <p className={`card-text text-truncate ${navigation.state === "idle" ? "" : "placeholder-glow"}`}>
+                                            <span className={navigation.state === "idle" ? "" : "placeholder"}>
+                                                {board.description ? board.description : <em className="text-muted">No Description</em>}
+                                            </span>
+                                        </p>
                                     </Link>
                                     <div className="dropdown border-start rounded-0">
-                                        <button className="btn fs-5 mt-2 rounded-5 btn-outline-secondary border-0 ms-1" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <button className="btn fs-5 mt-2 rounded-4 btn-outline-secondary border-0 ms-1" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i className="bi bi-three-dots-vertical"></i>
                                             <span className="visually-hidden">Actions</span>
                                         </button>
                                         <ul className="dropdown-menu">
                                             <li className="dropdown-item dropdown-action" onClick={e => onEditBoardClicked(e, board)}>Edit</li>
                                             <li><hr className="dropdown-divider"/></li>
-                                            <li className="dropdown-item dropdown-action text-danger" onClick={onDeleteBoardClicked}>Delete</li>
+                                            <li className="dropdown-item dropdown-action text-danger" onClick={e => onDeleteBoardClicked(e, board)}>Delete</li>
                                         </ul>
                                     </div>
                                 </div>
@@ -127,18 +165,34 @@ export default function Boards() {
                             onChange={e => onBoardFormInput(e, "description")}
                             value={boardForm.description ? boardForm.description : ""}
                         ></textarea>
-                        <div className="form-text">{boardForm.description.length}/{descriptionMaxLength}</div>
+                        <div className="form-text">{boardForm.description ? boardForm.description.length : 0}/{descriptionMaxLength}</div>
                     </div>
                     <div>
                         <input type="text" name="type" value="board" className="d-none" readOnly/>
                     </div>
                     <div className="mb-3" style={{justifyContent: "end"}}>
-                        <input type="button" className="btn btn-secondary me-3" onClick={onBoardFormCancel} value="Cancel"/>
+                        <input type="button" className="btn btn-secondary me-1" onClick={onBoardFormCancel} value="Cancel"/>
                         <input type="submit" className="btn btn-primary" value={isEditing ? "Save Changes" : "Create Board"}
                             style={{
                                 display: boardForm.title ? "inline" : "none"
                             }}
                         />
+                    </div>
+                </Form>
+            </Modal>
+            <Modal title="Delete Board" isShowing={isDeleteModalVisible} onCancel={onDeleteBoardCanceled}>
+                <Form onSubmit={onDeleteBoardSubmit}>
+                    <div className="my-3">
+                        <p>
+                            Are you sure you want to delete this board? <span className="fw-bold">It will be gone forever.</span><br />
+                        </p>
+                        <p className="fw-bold lead">
+                            Name: {boardForm.title}
+                        </p>
+                    </div>
+                    <div className="mb-3" style={{justifyContent: "end"}}>
+                        <input type="button" className="btn btn-secondary me-1" onClick={onDeleteBoardCanceled} value="Cancel"/>
+                        <input type="submit" className="btn btn-danger" value="Delete Board"/>
                     </div>
                 </Form>
             </Modal>

@@ -62,6 +62,54 @@ const userSchema = new mongoose.Schema({
 }, {timestamps: true});
 
 
+columnSchema.pre("findOneAndDelete", async function (next) {
+    const columnDoc = await this.model.findOne(this.getFilter());
+    if (!columnDoc) {
+        next();
+    }
+
+    await mongoose.model("Task").deleteMany({
+        _id: {
+            $in: columnDoc.tasks
+        }
+    })
+    next(); 
+});
+
+
+columnSchema.pre("deleteMany", async function(next) {
+    const columnDocs = await this.model.find(this.getFilter());
+    if (!columnDocs) {
+        next();
+    }
+
+    for (const column of columnDocs) {
+        await mongoose.model("Task").deleteMany({
+            _id: {
+                $in: column.tasks
+            }
+        });
+    }
+
+    next(); 
+});
+
+
+boardSchema.pre("findOneAndDelete", async function (next) {
+    const boardDoc = await this.model.findOne(this.getFilter());
+    if (!boardDoc) {
+        next();
+    }
+
+    await mongoose.model("Column").deleteMany({
+        _id: {
+            $in: boardDoc.columnOrder
+        }
+    });
+    next();
+});
+
+
 const Task = mongoose.model("Task", taskSchema);
 const Column = mongoose.model("Column", columnSchema);
 const Board = mongoose.model("Board", boardSchema);
