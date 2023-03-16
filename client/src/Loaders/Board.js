@@ -150,6 +150,21 @@ async function handleTaskRequest(method, formData, params) {
 
             return response;
         }
+        case "DELETE": {
+            const { taskId } = formObj;
+            const response = await fetch(`/boards/${boardId}/columns/${columnId}/tasks/${taskId}`, {
+                method: "delete",
+                headers: {
+                    "x-access-token": localStorage.getItem("token")
+                }
+            });
+
+            if (!response) {
+                throw response;
+            }
+
+            return response;
+        }
         default : {
             throw new Response("", {status: 200});
         }
@@ -227,8 +242,6 @@ async function handleBoardContainerRequest(method, formData, params) {
                 const source = JSON.parse(sourceJson);
                 const destination = JSON.parse(destinationJson);
 
-                source.droppableId = source.droppableId.substr(2);
-                destination.droppableId = destination.droppableId.substr(2);
                 const response = await fetch(`/boards/${boardId}/reorder/${reorderType}`, {
                     method: "post",
                     headers: {

@@ -8,9 +8,20 @@ export default function BoardContainer() {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+    const [isReorderModalVisible, setIsReorderModalVisible] = useState(false);
+
     const [boardForm, setBoardForm] = useState({
         title: board.title,
         description: board.description
+    });
+
+    const [reorderForm, setReorderForm] = useState({
+        reorderType: "tasks",
+        reorderFromColumn: 0,
+        reorderTask: 0,
+        reorderToColumn: 0,
+        reorderToPosition: 0,
+        reorderColumn: 0
     });
 
     const submit = useSubmit();
@@ -18,18 +29,10 @@ export default function BoardContainer() {
 
     const descriptionMaxLength = 150;
 
+    // Edit
     const onEditBoardClicked = e => {
         e.preventDefault();
         setIsModalVisible(true);
-        setBoardForm({
-            title: board.title,
-            description: board.description
-        });
-    };
-
-    const onDeleteBoardClicked = e => {
-        e.preventDefault();
-        setIsDeleteModalVisible(true);
         setBoardForm({
             title: board.title,
             description: board.description
@@ -40,12 +43,7 @@ export default function BoardContainer() {
         e.preventDefault();
         setIsModalVisible(false);
     };
-
-    const onDeleteBoardCanceled = e => {
-        e.preventDefault();
-        setIsDeleteModalVisible(false);
-    }
-
+    
     const onSubmit = e => {
         e.preventDefault();
         setIsModalVisible(false);
@@ -55,7 +53,22 @@ export default function BoardContainer() {
             editType: "EDIT"
         }, {method: "POST"});
     };
+    
+    // Delete
+    const onDeleteBoardClicked = e => {
+        e.preventDefault();
+        setIsDeleteModalVisible(true);
+        setBoardForm({
+            title: board.title,
+            description: board.description
+        });
+    };
 
+    const onDeleteBoardCanceled = e => {
+        e.preventDefault();
+        setIsDeleteModalVisible(false);
+    }
+    
     const onDeleteBoardSubmit = e => {
         e.preventDefault();
         setIsDeleteModalVisible(false);
@@ -63,12 +76,183 @@ export default function BoardContainer() {
             type: "BOARD",
         }, {method: "DELETE"});
     };
-
+    
     const onBoardFormInput = (e, field) => {
         setBoardForm({
             ...boardForm,
             [field]: e.target.value
         });
+    };
+
+    // Swap
+    const onReorderClicked = e => {
+        e.preventDefault();
+        setIsReorderModalVisible(true);
+    };
+
+    const onReorderCancel = e => {
+        e.preventDefault();
+        setIsReorderModalVisible(false);
+    };
+
+    const onReorderSubmit = e => {
+        e.preventDefault();
+        setIsReorderModalVisible(false);
+
+        const reorderFormCopy = {...reorderForm};
+        if (reorderFormCopy.reorderType === "tasks") {
+            const {reorderType, reorderFromColumn, reorderTask, reorderToColumn, reorderToPosition} = reorderFormCopy;
+            
+            const source = {
+                droppableId: board.columnOrder[reorderFromColumn]._id,
+                index: reorderTask
+            };
+
+            const destination = {
+                droppableId: board.columnOrder[reorderToColumn]._id,
+                index: reorderToPosition
+            }
+
+            if (source.droppableId === destination.droppableId && destination.index !== 0) {
+                destination.index -= 1;
+            }
+
+            submit({
+                type: "BOARD",
+                editType: "REORDER",
+                reorderType,
+                sourceJson: JSON.stringify(source),
+                destinationJson: JSON.stringify(destination),
+            }, {method: "POST"});
+        } else if (reorderForm.reorderType === "columns") {
+            const {reorderType, reorderColumn, reorderToPosition} = reorderFormCopy;
+            
+            const source = {
+                droppableId: "b-columns",
+                index: reorderColumn
+            };
+
+            const destination = {
+                droppableId: "b-columns",
+                index: reorderToPosition
+            };
+
+            if (destination.index !== 0) {
+                destination.index -= 1;
+            }
+
+            submit({
+                type: "BOARD",
+                editType: "REORDER",
+                reorderType,
+                sourceJson: JSON.stringify(source),
+                destinationJson: JSON.stringify(destination),
+            }, {method: "POST"});
+        }
+
+        setReorderForm({
+            reorderType: "tasks",
+            reorderFromColumn: 0,
+            reorderTask: 0,
+            reorderToColumn: 0,
+            reorderToPosition: 0,
+            reorderColumn: 0
+        });
+    };
+
+    const onReorderInput = (e, field) => {
+        e.preventDefault();
+
+        setReorderForm({
+            ...reorderForm,
+            [field]: field === "reorderType" ? e.target.value : Number(e.target.value)
+        });
+
+
+    };
+
+    const getFromColumnTasks = () => {
+        const fromColumn = board.columnOrder[reorderForm.reorderFromColumn];
+        if (!!fromColumn && !!fromColumn.tasks) {
+            const tasks = [...fromColumn.tasks];
+
+            if (!tasks.length) {
+                return;
+            } else {
+                return tasks.map((task, index) => (
+                    <option value={index} key={task._id}>{task.title}</option>
+                ));
+            }
+        }
+    };
+
+    const getToColumnPositions = () => {
+        const toColumn = {...board.columnOrder[reorderForm.reorderToColumn]};
+
+        if (!!toColumn && !!toColumn.tasks) {
+            const tasks = [...toColumn.tasks];
+
+            if (!tasks.length) {
+                return (
+                    <option value={0}>Start</option>
+                );
+            } else {
+                const isSameColumn = reorderForm.reorderFromColumn === reorderForm.reorderToColumn;
+                return (
+                    <>
+                        {
+                            tasks.map((task, index) => {
+                                let optionText = index === 0 ? "Start" : `After ${tasks[index - 1].title}`;
+                                if (isSameColumn && reorderForm.reorderTask === index) {
+                                    return (
+                                        <option className="d-none" value={index} key={task._id} disabled>Original Position</option>
+                                    );
+                                } else if (isSameColumn && (reorderForm.reorderTask + 1) === (index)) {
+                                    return <option className="d-none" value={index} key={task._id} disabled>Original Position</option>
+                                }
+                                return (
+                                    <option value={index} key={task._id}>{optionText}</option>
+                                );
+                            })
+                        }
+                        {
+                            // If it's not (the same column and the last item of that column)
+                            !(isSameColumn && reorderForm.reorderTask === tasks.length - 1) && <option value={tasks.length}>End</option>
+                        }
+                    </>
+                );
+            }
+        }
+    };
+
+    const getColumnReorderPositions = () => {
+        const columns = board.columnOrder;
+        return (
+            <>
+                {
+                    columns.map((column, index) => {
+                        const optionText = index === 0 ? "Start" : `After ${columns[index - 1].title}`;
+
+                        if (reorderForm.reorderColumn === index || reorderForm.reorderColumn + 1 === index) {
+                            return (
+                                <option className="d-none" value={index} key={column._id} disabled>Original Position</option>
+                            );
+                        }
+
+                        return (
+                            <option value={index} key={column._id}>{optionText}</option>
+                        );
+                    })
+                }
+                {
+                    reorderForm.reorderColumn !== columns.length - 1 && <option value={columns.length}>End</option>
+                }
+            </>
+        );
+    };
+
+    const validateReorderForm = () => {
+        return true;
     };
     
     return (
@@ -119,6 +303,135 @@ export default function BoardContainer() {
                     </div>
                 </Form>
             </Modal>
+            <Modal title="Move Columns/Tasks" isShowing={isReorderModalVisible} onCancel={onReorderCancel}>
+                <Form onSubmit={onReorderSubmit}>
+                    <div className="my-3">
+                        <div className="row mb-2">
+                            <label htmlFor="reorderType" className="form-label col-12 col-sm-4 pt-1">Move</label>
+                            <div className="col-12 col-sm-8">
+                                <select
+                                    name="reorderType"
+                                    id="reorderType"
+                                    className="form-select"
+                                    value={reorderForm.reorderType}
+                                    onChange={e => onReorderInput(e, "reorderType")}
+                                >
+                                    <option value="tasks">Task</option>
+                                    <option value="columns">Column</option>
+                                </select>
+                            </div>
+                        </div>
+                        { reorderForm.reorderType === "tasks" && 
+                            <>
+                                <div className="row mb-2">
+                                    <label htmlFor="reorderFromColumn" className="form-label col-12 col-sm-4 pt-1">From Column</label>
+                                    <div className="col-12 col-sm-8">
+                                        <select
+                                            name="reorderFromColumn"
+                                            id="reorderFromColumn"
+                                            className="form-select"
+                                            value={reorderForm.reorderFromColumn}
+                                            onChange={e => onReorderInput(e, "reorderFromColumn")}
+                                        >
+                                            {
+                                                board.columnOrder.map((column, index) => (
+                                                    <option key={column._id} value={index}>{column.title}</option>
+                                                ))
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="row mb-2">
+                                    <label htmlFor="reorderTask" className="form-label col-12 col-sm-4 pt-1">Task</label>
+                                    <div className="col-12 col-sm-8">
+                                        <select
+                                            name="reorderTask"
+                                            id="reorderTask"
+                                            className="form-select"
+                                            value={reorderForm.reorderTask}
+                                            onChange={e => onReorderInput(e, "reorderTask")}
+                                        >
+                                            {getFromColumnTasks()}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="row mb-2">
+                                    <label htmlFor="reorderToColumn" className="form-label col-12 col-sm-4 pt-1">To Column</label>
+                                    <div className="col-12 col-sm-8">
+                                        <select
+                                            name="reorderToColumn"
+                                            id="reorderToColumn"
+                                            className="form-select"
+                                            value={reorderForm.reorderToColumn}
+                                            onChange={e => onReorderInput(e, "reorderToColumn")}
+                                        >
+                                            {
+                                                board.columnOrder.map((column, index) => (
+                                                    <option key={column._id} value={index}>{column.title}</option>
+                                                ))
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="row mb-2">
+                                    <label htmlFor="reorderToPosition" className="form-label col-12 col-sm-4 pt-1">At Position</label>
+                                    <div className="col-12 col-sm-8">
+                                        <select
+                                            name="reorderToPosition"
+                                            id="reorderToPosition"
+                                            className="form-select"
+                                            value={reorderForm.reorderToPosition}
+                                            onChange={e => onReorderInput(e, "reorderToPosition")}
+                                        >
+                                            {getToColumnPositions()}
+                                        </select>
+                                    </div>
+                                </div>
+                            </>
+                        }
+                        { reorderForm.reorderType === "columns" && 
+                            <>
+                                <div className="row mb-2">
+                                    <label htmlFor="reorderColumn" className="form-label col-12 col-sm-4 pt-1">Column</label>
+                                    <div className="col-12 col-sm-8">
+                                        <select
+                                            name="reorderColumn"
+                                            id="reorderColumn"
+                                            className="form-select"
+                                            value={reorderForm.reorderColumn}
+                                            onChange={e => onReorderInput(e, "reorderColumn")}
+                                        >
+                                            {
+                                                board.columnOrder.map((column, index) => (
+                                                    <option key={column._id} value={index}>{column.title}</option>
+                                                ))
+                                            }
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="row mb-2">
+                                    <label htmlFor="reorderToPosition" className="form-label col-12 col-sm-4 pt-1">To Position</label>
+                                    <div className="col-12 col-sm-8">
+                                        <select
+                                            name="reorderToPosition"
+                                            id="reorderToPosition"
+                                            className="form-select"
+                                            value={reorderForm.reorderToPosition}
+                                            onChange={e => onReorderInput(e, "reorderToPosition")}
+                                        >
+                                            {getColumnReorderPositions()}
+                                        </select>
+                                    </div>
+                                </div>
+                            </>
+                        }
+                    </div>
+                    <div className="mb-3" style={{justifyContent: "end"}}>
+                        <input type="button" className="btn btn-secondary me-1" onClick={onReorderCancel} value="Cancel"/>
+                        <input type="submit" className={`btn btn-danger ${validateReorderForm() ? "d-inline": "d-none"}`} value={`Move ${reorderForm.reorderType.charAt(0).toUpperCase()}${reorderForm.reorderType.substring(1, reorderForm.reorderType.length - 1)}`}/>
+                    </div>
+                </Form>
+            </Modal>
             <div className="container-fluid">
                 <div className="row mt-2">
                     <div className="col col-12 d-flex justify-content-between">
@@ -132,6 +445,7 @@ export default function BoardContainer() {
                             </button>
                             <ul className="dropdown-menu">
                                 <li className="dropdown-item dropdown-action" onClick={onEditBoardClicked}>Edit</li>
+                                <li className={`dropdown-item dropdown-action ${!board.columnOrder.length ? "d-none" : ""}`} onClick={onReorderClicked}>Move Columns/Tasks</li>
                                 <li><hr className="dropdown-divider"/></li>
                                 <li className="dropdown-item dropdown-action text-danger" onClick={onDeleteBoardClicked}>Delete</li>
                             </ul>

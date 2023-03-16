@@ -4,6 +4,6 @@
 
 .task:hover {
     cursor: pointer;
-    background-color: lightgray;
-    border: none;
+    outline: 5px solid rgba(var(--bs-primary-rgb), 0.3);
+    transition: outline 100ms;
 }

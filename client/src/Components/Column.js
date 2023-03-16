@@ -96,7 +96,7 @@ function Column(props) {
                     </div>
                     <div className="mb-3" style={{justifyContent: "end"}}>
                         <input type="button" className="btn btn-secondary me-1" onClick={onDeleteColumnCancel} value="Cancel"/>
-                        <input type="submit" className="btn btn-danger" value="Delete Board"/>
+                        <input type="submit" className="btn btn-danger" value="Delete Column"/>
                     </div>
                 </Form>
             </Modal>
@@ -124,7 +124,7 @@ function Column(props) {
                                 >
                                     {navigation.state !== "idle" ? <div className="placeholder col-12"></div> : title}
                                 </h5>
-                                <div className="dropdown z-0">
+                                <div className="dropdown">
                                     <button className="btn lh-sm rounded-3 btn-sm btn-outline-secondary border-0 py-2 mt-1" data-bs-toggle="dropdown" aria-expanded="false" >
                                         <i className="bi bi-three-dots"></i>
                                         <span className="visually-hidden">Actions</span>

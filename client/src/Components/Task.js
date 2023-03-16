@@ -7,16 +7,18 @@ import "./css/Task.css";
 
 export default function Task(props) {
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+
     const [taskCopy, setTaskCopy] = useState({
         title: props.title,
         description: props.description,
         hasChanged: false
     });
-
+    const submit = useSubmit();
+    
     const taskId = props.id.substr(2);
 
-    const submit = useSubmit();
-
+    // For Editing
     const onClick = e => {
         e.preventDefault();
         setIsModalVisible(true);
@@ -30,7 +32,7 @@ export default function Task(props) {
             description: props.description,
             hasChanged: false
         });
-    }
+    };
 
     const onChange = (e, field) => {
         setTaskCopy({
@@ -38,7 +40,7 @@ export default function Task(props) {
             [field]: e.target.value,
             hasChanged: true
         });
-    }
+    };
 
     const onSubmit = e => {
         e.preventDefault();
@@ -53,10 +55,47 @@ export default function Task(props) {
                 description: taskCopy.description
             }, {method: "POST"});
         }
-    }
+    };
+
+    // Delete
+    const onDeleteTaskClicked = e => {
+        e.preventDefault();
+        setIsDeleteModalVisible(true);
+    };
+
+    const onDeleteTaskSubmit = e => {
+        e.preventDefault();
+        setIsDeleteModalVisible(false);
+        submit({
+            type: "TASK",
+            taskId,
+            columnId: props.columnId,
+        }, {method: "DELETE"});
+    };
+
+    const onDeleteTaskCancel = e => {
+        e.preventDefault();
+        setIsDeleteModalVisible(false);
+    };
 
     return (
         <>
+            <Modal isShowing={isDeleteModalVisible} onCancel={onDeleteTaskCancel} title="Delete Task">
+                <Form onSubmit={onDeleteTaskSubmit}>
+                    <div className="my-3">
+                        <p>
+                            Are you sure you want to delete this task? <span className="fw-bold">It will be gone forever.</span><br />
+                        </p>
+                        <p className="fw-bold lead">
+                            Name: {props.title}
+                        </p>
+                    </div>
+                    <div className="mb-3" style={{justifyContent: "end"}}>
+                        <input type="button" className="btn btn-secondary me-1" onClick={onDeleteTaskClicked} value="Cancel"/>
+                        <input type="submit" className="btn btn-danger" value="Delete Task"/>
+                    </div>
+                </Form>
+            </Modal>
             <Modal isShowing={isModalVisible} onCancel={onCancelClicked} title={"View/Edit Task"}>
                 <Form method="POST" onSubmit={onSubmit}>
                     <div className="my-3">
@@ -86,16 +125,30 @@ export default function Task(props) {
             <Draggable draggableId={props.id} index={props.index}>
                 {(provided) => (
                     <div 
-                        className="task my-2 p-2 border rounded-3 text-truncate lh-sm"
+                        className="task my-2 py-2 border rounded-3 lh-sm d-flex justify-content-between"
                         style={{
                             maxWidth: "200px"
                         }}
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        onClick={onClick}
                     >
-                        <span>{props.title}</span>
+                        <div className="flex-grow-1 text-truncate ps-2" style={{minWidth: 0}} onClick={onClick}>{props.title}</div>
+                        <div className="dropdown border-start pe-1">
+                            <button className="btn lh-sm rounded-3 fs-6 btn-outline-secondary border-0 py-0 px-2" data-bs-toggle="dropdown" aria-expanded="false"
+                                style={{
+                                    height: "100%"
+                                }} 
+                            >
+                                <i className="bi bi-three-dots-vertical"></i>
+                                <span className="visually-hidden">Actions</span>
+                            </button>
+                            <ul className="dropdown-menu">
+                                <li className="dropdown-item dropdown-action" onClick={onClick}>Edit</li>
+                                <li><hr className="dropdown-divider"/></li>
+                                <li className="dropdown-item dropdown-action text-danger" onClick={onDeleteTaskClicked}>Delete</li>
+                            </ul>
+                        </div>
                     </div>
                 )}
             </Draggable>

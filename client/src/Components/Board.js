@@ -20,6 +20,9 @@ function Board({ board }) {
             return;
         }
 
+        source.droppableId = source.droppableId.substring(2);
+        destination.droppableId = destination.droppableId.substring(2);
+
         submit({
             type: "BOARD",
             editType: "REORDER",

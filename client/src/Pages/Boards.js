@@ -93,6 +93,7 @@ export default function Boards() {
         
     };
 
+
     return (
         <>
             <div className="container-fluid">
@@ -120,7 +121,7 @@ export default function Boards() {
                             <div className="card card-hover h-100">
                                 <div className="card-body d-flex justify-content-between">
                                     <Link to={`/boards/${board._id}`} className="text-decoration-none text-dark flex-grow-1 pe-3" style={{minWidth: "0"}}>
-                                        <h2 className={`card-title h5 text-truncate ${navigation.state === "idle" ? "" : "placeholder-glow"}`}>
+                                        <h2 className={`card-title h5 pb-1 text-truncate ${navigation.state === "idle" ? "" : "placeholder-glow"}`}>
                                             <span className={navigation.state === "idle" ? "": "placeholder"}>{board.title}</span>
                                         </h2>
                                         <p className={`card-text text-truncate ${navigation.state === "idle" ? "" : "placeholder-glow"}`}>

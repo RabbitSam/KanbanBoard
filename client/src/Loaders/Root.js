@@ -9,6 +9,7 @@ export async function rootLoader() {
         });
 
         if (!response.ok) {
+            localStorage.removeItem("isLoggedIn");
             throw new Response("An Unexpected Error Occured. Try Again.")
         }
 
@@ -16,6 +17,8 @@ export async function rootLoader() {
         
         if (data.isLoggedIn) {
             localStorage.setItem("isLoggedIn", "true");
+        } else {
+            localStorage.removeItem("isLoggedIn");
         }
     } else {
         localStorage.setItem("isLoggedIn", "false");

@@ -333,4 +333,20 @@ router.post("/:boardId/columns/:columnId/tasks/:taskId", verifyJWT, async (req, 
     }
 });
 
+
+// Deleters
+// Delete a task
+router.delete("/:boardId/columns/:columnId/tasks/:taskId", verifyJWT, async(req, res) => {
+    const taskId = req.params.taskId;
+    
+    try {
+        await Task.findByIdAndDelete(taskId);
+        
+        res.status(200).json({message: "success"});
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({message: "An unexpected error occured"});
+    }
+});
+
 module.exports = router;
