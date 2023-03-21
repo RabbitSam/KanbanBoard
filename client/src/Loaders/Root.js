@@ -1,7 +1,11 @@
+import store from "../Store/store";
+import { signIn, signOut } from "../Store/userReducer";
+
+
 export async function rootLoader() {
     const token = localStorage.getItem("token");
     if (token) {
-        const response = await fetch("/isUserAuth", {
+        const response = await fetch("/api/isUserAuth", {
             method: "get",
             headers: {
                 "x-access-token": token
@@ -9,19 +13,19 @@ export async function rootLoader() {
         });
 
         if (!response.ok) {
-            localStorage.removeItem("isLoggedIn");
-            throw new Response("An Unexpected Error Occured. Try Again.")
+            store.dispatch(signOut());
+            return response;
         }
 
         const data = await response.json();
         
         if (data.isLoggedIn) {
-            localStorage.setItem("isLoggedIn", "true");
+            store.dispatch(signIn());
         } else {
-            localStorage.removeItem("isLoggedIn");
+            store.dispatch(signOut());
         }
     } else {
-        localStorage.setItem("isLoggedIn", "false");
+        store.dispatch(signOut());
     }
 
     return new Response("We good.", {status: 200});

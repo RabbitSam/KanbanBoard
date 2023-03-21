@@ -6,14 +6,14 @@ export default function Modal(props) {
     };
     
     return (
-        <div className="container-fluid my-modal h-100 position-absolute top-0 start-0" 
+        <div className="container-fluid my-modal h-100 position-fixed top-0 start-0" 
             style={{
                 display: (props.isShowing ? "block" : "none"),
                 overflowY: "hidden",
                 zIndex: 1055
             }}
         >
-            <div className="row mt-5 justify-content-center">
+            <div className="row justify-content-center mt-5">
                 <div className="col-11 col-sm-10 col-lg-6 bg-white border rounded-3">
                     <div className="row border-bottom py-3">
                         <div className="col-10 pt-2">

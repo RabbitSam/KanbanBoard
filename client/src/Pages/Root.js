@@ -1,15 +1,17 @@
 import Logo from "../Components/Logo";
-import { Link, NavLink, Outlet, useNavigation } from "react-router-dom";
+import { Link, NavLink, Outlet, useNavigation, useLocation } from "react-router-dom";
 import "./css/Root.css";
-import isLoggedIn from "../Functions/isLoggedIn";
+import { selectIsLoggedIn } from "../Store/userReducer";
+import { useSelector } from "react-redux";
 
 export default function Root() {
-    const getNavClass = ({isActive, isPending}) => (
-        isActive ? "nav-link active" : isPending ? "nav-link" : "nav-link"
+    const getNavClass = ({isActive}) => (
+        isActive ? "nav-link active" : "nav-link"
     );
 
     const navigation = useNavigation();
-
+    const { pathname } = useLocation();
+    const isLoggedIn = useSelector(selectIsLoggedIn);
 
     return (
         <div>
@@ -29,12 +31,12 @@ export default function Root() {
                     <div className={`collapse navbar-collapse`} id="rootContent">
                         <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
                             <li className="nav-item">
-                                <NavLink className={getNavClass} to="/" aria-current="page" end>
+                                <NavLink className={({isActive}) => (isActive || pathname === "/boards" ? "nav-link active" : "nav-link")} to="/" aria-current="page" end>
                                     Home
                                 </NavLink>
                             </li>
                             <li className="nav-item">
-                                {!isLoggedIn() ? (
+                                {!isLoggedIn ? (
                                     <NavLink className={getNavClass} to="/sign-in">
                                         Sign In
                                     </NavLink>

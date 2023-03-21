@@ -1,6 +1,6 @@
 const verifyJWT = require("./verifyJWT");
 const { User, Board, Column, Task } = require("../models/models");
-const { default: mongoose } = require("mongoose");
+const verifyUserBoard = require("./verifyUserBoard");
 
 const router = require("express").Router();
 
@@ -24,7 +24,7 @@ router.get("/", verifyJWT, async (req, res) => {
 });
 
 // Get individual board data
-router.get("/:boardId", verifyJWT, async (req, res) => {
+router.get("/:boardId", verifyJWT, verifyUserBoard, async (req, res) => {
     const boardId = req.params.boardId;
     try {
         const board = await Board.findById(boardId).populate("columnOrder");
@@ -74,7 +74,7 @@ router.put("/", verifyJWT, async (req, res) => {
 
 // Posters
 // Edit a board
-router.post("/:boardId", verifyJWT, async (req, res) => {
+router.post("/:boardId", verifyJWT, verifyUserBoard, async (req, res) => {
     const boardId = req.params.boardId;
     const { title, description } = req.body;
     try {
@@ -98,7 +98,7 @@ router.post("/:boardId", verifyJWT, async (req, res) => {
 
 
 // Reorder columns in a board
-router.post("/:boardId/reorder/columns", verifyJWT, async (req, res) => {
+router.post("/:boardId/reorder/columns", verifyJWT, verifyUserBoard, async (req, res) => {
     const boardId = req.params.boardId;
     const { source, destination } = req.body;
 
@@ -137,7 +137,7 @@ router.post("/:boardId/reorder/columns", verifyJWT, async (req, res) => {
 
 // Deleters
 // Delete a board
-router.delete("/:boardId", verifyJWT, async (req, res) => {
+router.delete("/:boardId", verifyJWT, verifyUserBoard, async (req, res) => {
     const boardId = req.params.boardId;
     try {
         await Board.findByIdAndDelete(boardId);
@@ -159,7 +159,7 @@ router.delete("/:boardId", verifyJWT, async (req, res) => {
 // Column methods
 // Putters
 // Add a column
-router.put("/:boardId/columns", verifyJWT, async (req, res) => {
+router.put("/:boardId/columns", verifyJWT, verifyUserBoard, async (req, res) => {
     const boardId = req.params.boardId;
     const title = "New Column";
 
@@ -184,7 +184,7 @@ router.put("/:boardId/columns", verifyJWT, async (req, res) => {
 
 // Posters
 // Edit a column
-router.post("/:boardId/columns/:columnId", verifyJWT, async (req, res) => {
+router.post("/:boardId/columns/:columnId", verifyJWT, verifyUserBoard, async (req, res) => {
     const columnId = req.params.columnId;
     const { title } = req.body;
 
@@ -207,7 +207,7 @@ router.post("/:boardId/columns/:columnId", verifyJWT, async (req, res) => {
 
 // Deleters
 // Delete a column
-router.delete("/:boardId/columns/:columnId", verifyJWT, async(req, res) => {
+router.delete("/:boardId/columns/:columnId", verifyJWT, verifyUserBoard, async(req, res) => {
     const boardId = req.params.boardId;
     const columnId = req.params.columnId;
 
@@ -226,7 +226,7 @@ router.delete("/:boardId/columns/:columnId", verifyJWT, async(req, res) => {
 
 
 // Reorder tasks
-router.post("/:boardId/reorder/tasks", verifyJWT, async (req, res) => {
+router.post("/:boardId/reorder/tasks", verifyJWT, verifyUserBoard, async (req, res) => {
     const { source, destination } = req.body;
 
     if (!destination) {
@@ -288,7 +288,7 @@ router.post("/:boardId/reorder/tasks", verifyJWT, async (req, res) => {
 
 // Task methods
 // Putters
-router.put("/:boardId/columns/:columnId/tasks", verifyJWT, async (req, res) => {
+router.put("/:boardId/columns/:columnId/tasks", verifyJWT, verifyUserBoard, async (req, res) => {
     const columnId = req.params.columnId;
     const title = "New Task";
 
@@ -310,7 +310,7 @@ router.put("/:boardId/columns/:columnId/tasks", verifyJWT, async (req, res) => {
 });
 
 // Posters
-router.post("/:boardId/columns/:columnId/tasks/:taskId", verifyJWT, async (req, res) => {
+router.post("/:boardId/columns/:columnId/tasks/:taskId", verifyJWT, verifyUserBoard, async (req, res) => {
     const taskId = req.params.taskId;
     const { title, description } = req.body;
     
@@ -336,7 +336,7 @@ router.post("/:boardId/columns/:columnId/tasks/:taskId", verifyJWT, async (req, 
 
 // Deleters
 // Delete a task
-router.delete("/:boardId/columns/:columnId/tasks/:taskId", verifyJWT, async(req, res) => {
+router.delete("/:boardId/columns/:columnId/tasks/:taskId", verifyJWT, verifyUserBoard, async(req, res) => {
     const taskId = req.params.taskId;
     
     try {

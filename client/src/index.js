@@ -7,13 +7,17 @@ import 'bootstrap-icons/font/bootstrap-icons.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import router from './routes';
 import { RouterProvider } from 'react-router-dom';
+import { Provider as ReduxProvider } from 'react-redux';
+import store from './Store/store';
 
 
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <RouterProvider router={router} />
+    <ReduxProvider store={store}>
+        <RouterProvider router={router} />
+    </ReduxProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

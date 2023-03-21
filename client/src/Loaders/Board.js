@@ -1,7 +1,7 @@
 import { redirect } from "react-router-dom";
 
 export async function boardsLoader() {
-    const response = await fetch("/boards", {
+    const response = await fetch("/api/boards", {
         method: "get",
         headers: {
             "x-access-token": localStorage.getItem("token")
@@ -18,7 +18,7 @@ export async function boardsLoader() {
 }
 
 export async function boardContainerLoader({params}) {
-    const response = await fetch(`/boards/${params.boardId}`, {
+    const response = await fetch(`/api/boards/${params.boardId}`, {
         method: "get",
         headers: {
             "x-access-token": localStorage.getItem("token")
@@ -40,7 +40,7 @@ export async function boardsAction({request}) {
             const formData = await request.formData();
             const { title, description } = Object.fromEntries(formData);
 
-            const response = await fetch("/boards", {
+            const response = await fetch("/api/boards", {
                 method: "put",
                 headers: {
                     "Content-Type": "application/json",
@@ -55,13 +55,13 @@ export async function boardsAction({request}) {
 
             const data = await response.json();
 
-            return redirect(`/boards/${data.boardId}`);
+            return redirect(`/api/boards/${data.boardId}`);
         }
         case "POST": {
             const formData = await request.formData();
             const { _id, title, description } = Object.fromEntries(formData);
 
-            const response = await fetch(`/boards/${_id}`, {
+            const response = await fetch(`/api/boards/${_id}`, {
                 method: "post",
                 headers: {
                     "Content-Type": "application/json",
@@ -80,7 +80,7 @@ export async function boardsAction({request}) {
             const formData = await request.formData();
             const { _id } = Object.fromEntries(formData);
 
-            const response = await fetch(`/boards/${_id}`, {
+            const response = await fetch(`/api/boards/${_id}`, {
                 method: "delete",
                 headers: {
                     "x-access-token": localStorage.getItem("token")
@@ -118,7 +118,7 @@ async function handleTaskRequest(method, formData, params) {
 
     switch (method) {
         case "PUT": {
-            const response = await fetch(`/boards/${boardId}/columns/${columnId}/tasks`, {
+            const response = await fetch(`/api/boards/${boardId}/columns/${columnId}/tasks`, {
                 method: "put",
                 headers: {
                     "x-access-token": localStorage.getItem("token")
@@ -133,7 +133,7 @@ async function handleTaskRequest(method, formData, params) {
         }
         case "POST": {
             const { taskId, title, description } = formObj;
-            const response = await fetch(`/boards/${boardId}/columns/${columnId}/tasks/${taskId}`, {
+            const response = await fetch(`/api/boards/${boardId}/columns/${columnId}/tasks/${taskId}`, {
                 method: "post",
                 headers: {
                     "Content-Type": "application/json",
@@ -152,7 +152,7 @@ async function handleTaskRequest(method, formData, params) {
         }
         case "DELETE": {
             const { taskId } = formObj;
-            const response = await fetch(`/boards/${boardId}/columns/${columnId}/tasks/${taskId}`, {
+            const response = await fetch(`/api/boards/${boardId}/columns/${columnId}/tasks/${taskId}`, {
                 method: "delete",
                 headers: {
                     "x-access-token": localStorage.getItem("token")
@@ -177,7 +177,7 @@ async function handleColumnRequest(method, formData, params) {
 
     switch (method) {
         case "PUT": {
-            const response = await fetch(`/boards/${boardId}/columns`, {
+            const response = await fetch(`/api/boards/${boardId}/columns`, {
                 method: "put",
                 headers: {
                     "x-access-token": localStorage.getItem("token")
@@ -193,7 +193,7 @@ async function handleColumnRequest(method, formData, params) {
         case "POST": {
             const {columnId, title} = Object.fromEntries(formData);
 
-            const response = await fetch(`/boards/${boardId}/columns/${columnId}`, {
+            const response = await fetch(`/api/boards/${boardId}/columns/${columnId}`, {
                 method: "post",
                 headers: {
                     "Content-Type": "application/json",
@@ -210,7 +210,7 @@ async function handleColumnRequest(method, formData, params) {
         }
         case "DELETE": {
             const {columnId} = Object.fromEntries(formData);
-            const response = await fetch(`/boards/${boardId}/columns/${columnId}`, {
+            const response = await fetch(`/api/boards/${boardId}/columns/${columnId}`, {
                 method: "delete",
                 headers: {
                     "x-access-token": localStorage.getItem("token")
@@ -242,7 +242,7 @@ async function handleBoardContainerRequest(method, formData, params) {
                 const source = JSON.parse(sourceJson);
                 const destination = JSON.parse(destinationJson);
 
-                const response = await fetch(`/boards/${boardId}/reorder/${reorderType}`, {
+                const response = await fetch(`/api/boards/${boardId}/reorder/${reorderType}`, {
                     method: "post",
                     headers: {
                         "Content-Type": "application/json",
@@ -258,7 +258,7 @@ async function handleBoardContainerRequest(method, formData, params) {
                 return response;
             } else if (editType === "EDIT") {
                 const { title, description } = formObj;
-                const response = await fetch(`/boards/${boardId}`, {
+                const response = await fetch(`/api/boards/${boardId}`, {
                     method: "post",
                     headers: {
                         "Content-Type": "application/json",
@@ -276,7 +276,7 @@ async function handleBoardContainerRequest(method, formData, params) {
             return new Response("", {status: 405});
         }
         case "DELETE": {
-            const response = await fetch(`/boards/${boardId}`, {
+            const response = await fetch(`/api/boards/${boardId}`, {
                 method: "delete",
                 headers: {
                     "x-access-token": localStorage.getItem("token")

@@ -12,10 +12,10 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 // Routes setup
-app.use("/sign-up", require("./paths/signUp"));
-app.use("/sign-in", require("./paths/signIn"));
-app.use("/boards", require("./paths/boards"));
-app.use("/isUserAuth", require("./paths/isUserAuth"));
+app.use("/api/sign-up", require("./paths/signUp"));
+app.use("/api/sign-in", require("./paths/signIn"));
+app.use("/api/boards", require("./paths/boards"));
+app.use("/api/isUserAuth", require("./paths/isUserAuth"));
 
 // Connect DB
 mongoose.connect(dbURI, {

@@ -1,14 +1,17 @@
 import { createBrowserRouter } from "react-router-dom";
 import ErrorPage from "./Pages/ErrorPage";
+import Root from "./Pages/Root";
 import Home from "./Pages/Home";
 import {SignUp, SignIn} from "./Pages/SignUpSignIn";
-import Root from "./Pages/Root";
-import { rootLoader } from "./Loaders/Root";
-import SignOut from "./Pages/SignOut";
-import { boardsAction, boardContainerLoader, boardsLoader, boardContainerAction } from "./Loaders/Board";
-import BoardContainer from "./Pages/BoardContainer";
-import { signUpAction } from "./Loaders/SignUp";
 import SignUpSuccess from "./Pages/SignUpSuccess";
+import SignOut from "./Pages/SignOut";
+import Boards from "./Pages/Boards";
+import BoardContainer from "./Pages/BoardContainer";
+
+import { rootLoader } from "./Loaders/Root";
+import { HomeLoader } from "./Loaders/Home";
+import { boardsAction, boardContainerLoader, boardsLoader, boardContainerAction } from "./Loaders/Board";
+import { signUpAction } from "./Loaders/SignUp";
 import { signInAction } from "./Loaders/SignIn";
 import { signOutAction } from "./Loaders/SignOut";
 
@@ -22,6 +25,12 @@ const router = createBrowserRouter([
             {
                 path: "/",
                 element: <Home />,
+                loader: HomeLoader,
+                errorElement: <ErrorPage />
+            },
+            {
+                path: "/boards",
+                element: <Boards />,
                 loader: boardsLoader,
                 action: boardsAction,
                 errorElement: <ErrorPage />

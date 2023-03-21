@@ -1,11 +1,15 @@
 import { redirect } from "react-router-dom";
 
+export async function signUpLoader() {
+    
+}
+
 export async function signUpAction({request}) {
     const formData = await request.formData();
     const { name, email, password } = Object.fromEntries(formData);
     switch (request.method) {
         case "PUT": {
-            const url = "/sign-up"
+            const url = "/api/sign-up"
             const response = await fetch(url, {
                 method: "put",
                 headers: {
