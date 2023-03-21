@@ -14,6 +14,7 @@ import { boardsAction, boardContainerLoader, boardsLoader, boardContainerAction 
 import { signUpAction } from "./Loaders/SignUp";
 import { signInAction } from "./Loaders/SignIn";
 import { signOutAction } from "./Loaders/SignOut";
+import About from "./Pages/About";
 
 const router = createBrowserRouter([
     {
@@ -37,12 +38,14 @@ const router = createBrowserRouter([
             },
             {
                 path: "/sign-up/success",
-                element: <SignUpSuccess />
+                element: <SignUpSuccess />,
+                errorElement: <ErrorPage />
             },
             {
                 path: "/sign-out",
                 element: <SignOut />,
-                loader: signOutAction
+                loader: signOutAction,
+                errorElement: <ErrorPage />
             },
             {
                 path: "/boards/:boardId",
@@ -51,6 +54,11 @@ const router = createBrowserRouter([
                 errorElement: <ErrorPage />,
                 action: boardContainerAction
             },
+            {
+                path: "/about",
+                element: <About />,
+                errorElement: <ErrorPage/>
+            }
         ]
     },
     {

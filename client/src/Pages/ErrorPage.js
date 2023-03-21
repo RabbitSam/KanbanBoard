@@ -11,7 +11,7 @@ export default function ErrorPage() {
                 <div className="card-body">
                     <h1 className="card-title">Oops!</h1>
                     <p className="card-text">
-                        Sorry, an expected error has occured.<br/>
+                        Sorry, an unexpected error has occured. Please try again.<br/>
                         <em>{error.statusText || error.message}</em>
                     </p>
                 </div>

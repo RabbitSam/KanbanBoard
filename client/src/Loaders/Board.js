@@ -55,7 +55,7 @@ export async function boardsAction({request}) {
 
             const data = await response.json();
 
-            return redirect(`/api/boards/${data.boardId}`);
+            return redirect(`/boards/${data.boardId}`);
         }
         case "POST": {
             const formData = await request.formData();

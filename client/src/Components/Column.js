@@ -177,8 +177,8 @@ function Column(props) {
                                         style={{
                                             overflowY: "auto",
                                             overflowX: "hidden",
-                                            maxHeight: "calc(100vh - 303px)",
-                                            minHeight: "calc(100vh - 303px)"
+                                            maxHeight: "calc(100vh - 350px)",
+                                            minHeight: "calc(100vh - 350px)"
                                             // marginBottom: "5px"
                                         }}
                                     >

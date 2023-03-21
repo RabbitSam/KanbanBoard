@@ -428,7 +428,7 @@ export default function BoardContainer() {
                     </div>
                     <div className="mb-3" style={{justifyContent: "end"}}>
                         <input type="button" className="btn btn-secondary me-1" onClick={onReorderCancel} value="Cancel"/>
-                        <input type="submit" className={`btn btn-danger ${validateReorderForm() ? "d-inline": "d-none"}`} value={`Move ${reorderForm.reorderType.charAt(0).toUpperCase()}${reorderForm.reorderType.substring(1, reorderForm.reorderType.length - 1)}`}/>
+                        <input type="submit" className={`btn btn-primary ${validateReorderForm() ? "d-inline": "d-none"}`} value={`Move ${reorderForm.reorderType.charAt(0).toUpperCase()}${reorderForm.reorderType.substring(1, reorderForm.reorderType.length - 1)}`}/>
                     </div>
                 </Form>
             </Modal>
@@ -463,8 +463,8 @@ export default function BoardContainer() {
                 </div>
                 <div className="border rounded px-2" style={{
                     overflow: "auto",
-                    minHeight: "calc(100vh - 165px)",
-                    backgroundColor: "darkgrey"
+                    minHeight: "calc(100vh - 205px)",
+                    backgroundColor: "darkgrey",
                 }}>
                     {Object.keys(board).length ? <Board board={board} /> : <></>}
                 </div>

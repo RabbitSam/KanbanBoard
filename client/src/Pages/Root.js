@@ -14,8 +14,8 @@ export default function Root() {
     const isLoggedIn = useSelector(selectIsLoggedIn);
 
     return (
-        <div>
-            <nav className="navbar navbar-dark navbar-expand-lg bg-primary">
+        <div className="d-flex flex-column h-100">
+            <nav className="navbar navbar-dark navbar-expand-lg bg-primary flex-grow-0 flex-shrink-1">
                 <div className="container-fluid">
                     <Link className="navbar-brand text-white lh-sm" to="/"><Logo/></Link>
                     <button className="navbar-toggler"
@@ -55,7 +55,7 @@ export default function Root() {
                     </div>
                 </div>
             </nav>
-            <div>
+            <div className="flex-grow-1 flex-shrink-1">
                 {
                     (navigation.state === "loading" || navigation.state === "submitting") && (
                         <div id="loading-div">
@@ -66,6 +66,11 @@ export default function Root() {
                     )
                 }
                 <Outlet/>
+            </div>
+            <div className="mt-3 px-2 border-top bg-white flex-grow-0 flex-shrink-1">
+                <div className="px-2 pt-1 pb-2 text-muted">
+                    &copy; Sheikh Aquib Mahmood, 2023
+                </div>
             </div>
         </div>
     );

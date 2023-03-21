@@ -34,6 +34,12 @@ function ErrorToast(props) {
     );
 }
 
+function PageFooter() {
+    return (
+        <p className="text-muted">&copy; Sheikh Aquib Mahmood, 2023</p>
+    );
+}
+
 export function SignIn() {
     const [user, setUser] = useState({
         email: "",
@@ -110,6 +116,9 @@ export function SignIn() {
                         </button>
                         <div className="fs-6">
                             Don't have an account? <Link to="/sign-up" className="link-primary">Sign up now!</Link>
+                        </div>
+                        <div className="mt-5">
+                            <PageFooter />
                         </div>
                     </form>
                 </div>
@@ -205,6 +214,9 @@ export function SignUp() {
                         </button>
                         <div className="fs-6 mt-3">
                             Already have an account? <Link to="/sign-in" className="link-primary">Sign in here!</Link>
+                        </div>
+                        <div className="mt-5">
+                            <PageFooter />
                         </div>
                     </form>
                 </div>
