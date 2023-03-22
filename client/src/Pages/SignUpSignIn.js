@@ -2,7 +2,8 @@ import { useState } from "react";
 import Logo from "../Components/Logo";
 import Toast from "../Components/Toast";
 import "./css/SignUpSignIn.css";
-import { Link, useSubmit } from "react-router-dom";
+import { Link, useRouteError, useSubmit } from "react-router-dom";
+import ErrorPage from "./ErrorPage";
 
 
 function ErrorToast(props) {
@@ -40,15 +41,15 @@ function PageFooter() {
     );
 }
 
-export function SignIn() {
+export function SignIn(props) {
     const [user, setUser] = useState({
         email: "",
         password: ""
     });
 
     const [showPassword, setShowPassword] = useState(false);
-    const [isToastShowing, setIsToastShowing] = useState(false);
-    const [errorMessages, setErrorMessages] = useState([]);
+    const [isToastShowing, setIsToastShowing] = useState(props.errorMessages && props.errorMessages.length ? true : false);
+    const [errorMessages, setErrorMessages] = useState(props.errorMessages ? props.errorMessages : []);
     const [isQuerying, setIsQuerying] = useState(false);
 
     const submit = useSubmit();
@@ -127,7 +128,7 @@ export function SignIn() {
     );
 }
 
-export function SignUp() {
+export function SignUp(props) {
     const [user, setUser] = useState({
         name: "",
         email: "",
@@ -135,8 +136,8 @@ export function SignUp() {
         confirmPassword: ""
     });
     const [showPassword, setShowPassword] = useState(false);
-    const [isToastShowing, setIsToastShowing] = useState(false);
-    const [errorMessages, setErrorMessages] = useState([]);
+    const [isToastShowing, setIsToastShowing] = useState(props.errorMessages && props.errorMessages.length ? true : false);
+    const [errorMessages, setErrorMessages] = useState(props.errorMessages ? props.errorMessages : []);
     const [isQuerying, setIsQuerying] = useState(false);
 
     const submit = useSubmit();
@@ -223,4 +224,21 @@ export function SignUp() {
             </div>
         </>
     );
+}
+
+
+export function SignUpSignInError() {
+    const error = useRouteError();
+
+    if (error.status === 409) {
+        return (
+            <SignUp errorMessages={[error.data.message]}/>
+        );
+    } else if (error.status === 404) {
+        return (
+            <SignIn errorMessages={[error.data.message]}/>
+        );
+    } else {
+        return <ErrorPage />;
+    }
 }

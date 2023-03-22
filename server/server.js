@@ -5,7 +5,7 @@ require('dotenv').config();
 
 const app = express();
 const dbURI = process.env.DBURI;
-const port = process.env.port;
+const port = process.env.PORT;
 
 // Body Parser middleware setup
 app.use(bodyParser.urlencoded({extended: false}));
@@ -23,5 +23,5 @@ mongoose.connect(dbURI, {
     useUnifiedTopology: true
 }).then(res => {
     // Only listen for requests once the database is live
-    app.listen(port, () => console.log("Hello darkness my old friend"));
+    app.listen(port, () => console.log(`Listening on port ${port}`));
 }).catch(err => console.log(err));

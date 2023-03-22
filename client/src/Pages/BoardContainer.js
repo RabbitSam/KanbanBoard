@@ -113,6 +113,7 @@ export default function BoardContainer() {
                 index: reorderToPosition
             }
 
+            // Because the element is removed from the target column, the target position needs to be reduced by 1
             if (source.droppableId === destination.droppableId && destination.index !== 0) {
                 destination.index -= 1;
             }
@@ -137,6 +138,7 @@ export default function BoardContainer() {
                 index: reorderToPosition
             };
 
+            // Because the element is removed from the board, the target position needs to be reduced by 1
             if (destination.index !== 0) {
                 destination.index -= 1;
             }
@@ -163,6 +165,7 @@ export default function BoardContainer() {
     const onReorderInput = (e, field) => {
         e.preventDefault();
 
+        // Only reorderType field is words, rest are all numbers.
         setReorderForm({
             ...reorderForm,
             [field]: field === "reorderType" ? e.target.value : Number(e.target.value)
@@ -171,6 +174,7 @@ export default function BoardContainer() {
 
     };
 
+    // For tasks, shows a list of all the tasks.
     const getFromColumnTasks = () => {
         const fromColumn = board.columnOrder[reorderForm.reorderFromColumn];
         if (!!fromColumn && !!fromColumn.tasks) {
@@ -186,6 +190,7 @@ export default function BoardContainer() {
         }
     };
 
+    // For tasks, shows a list of possible positions in the target column
     const getToColumnPositions = () => {
         const toColumn = {...board.columnOrder[reorderForm.reorderToColumn]};
 
@@ -225,6 +230,7 @@ export default function BoardContainer() {
         }
     };
 
+    // For columns, shows a list of possible positions.
     const getColumnReorderPositions = () => {
         const columns = board.columnOrder;
         return (
@@ -245,16 +251,14 @@ export default function BoardContainer() {
                     })
                 }
                 {
+                    // If it's the last item of the board
                     reorderForm.reorderColumn !== columns.length - 1 && <option value={columns.length}>End</option>
                 }
             </>
         );
     };
 
-    const validateReorderForm = () => {
-        return true;
-    };
-    
+
     return (
         <>
             <Modal isShowing={isModalVisible} onCancel={onBoardFormCancel} title={"Edit Board"}>
@@ -428,7 +432,7 @@ export default function BoardContainer() {
                     </div>
                     <div className="mb-3" style={{justifyContent: "end"}}>
                         <input type="button" className="btn btn-secondary me-1" onClick={onReorderCancel} value="Cancel"/>
-                        <input type="submit" className={`btn btn-primary ${validateReorderForm() ? "d-inline": "d-none"}`} value={`Move ${reorderForm.reorderType.charAt(0).toUpperCase()}${reorderForm.reorderType.substring(1, reorderForm.reorderType.length - 1)}`}/>
+                        <input type="submit" className="btn btn-primary" value={`Move ${reorderForm.reorderType.charAt(0).toUpperCase()}${reorderForm.reorderType.substring(1, reorderForm.reorderType.length - 1)}`}/>
                     </div>
                 </Form>
             </Modal>

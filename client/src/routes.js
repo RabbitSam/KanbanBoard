@@ -2,7 +2,7 @@ import { createHashRouter } from "react-router-dom";
 import ErrorPage from "./Pages/ErrorPage";
 import Root from "./Pages/Root";
 import Home from "./Pages/Home";
-import {SignUp, SignIn} from "./Pages/SignUpSignIn";
+import {SignUp, SignIn, SignUpSignInError} from "./Pages/SignUpSignIn";
 import SignUpSuccess from "./Pages/SignUpSuccess";
 import SignOut from "./Pages/SignOut";
 import Boards from "./Pages/Boards";
@@ -11,8 +11,8 @@ import BoardContainer from "./Pages/BoardContainer";
 import { rootLoader } from "./Loaders/Root";
 import { HomeLoader } from "./Loaders/Home";
 import { boardsAction, boardContainerLoader, boardsLoader, boardContainerAction } from "./Loaders/Board";
-import { signUpAction } from "./Loaders/SignUp";
-import { signInAction } from "./Loaders/SignIn";
+import { signUpAction, signUpLoader } from "./Loaders/SignUp";
+import { signInAction, signInLoader } from "./Loaders/SignIn";
 import { signOutAction } from "./Loaders/SignOut";
 import About from "./Pages/About";
 
@@ -63,14 +63,16 @@ const router = createHashRouter([
     },
     {
         path: "/sign-up",
-        errorElement: <ErrorPage />,
+        errorElement: <SignUpSignInError />,
         element: <SignUp />,
+        loader: signUpLoader,
         action: signUpAction
     },
     {
         path: "/sign-in",
-        errorElement: <ErrorPage />,
+        errorElement: <SignUpSignInError />,
         element: <SignIn />,
+        loader: signInLoader,
         action: signInAction
     }
 ]);

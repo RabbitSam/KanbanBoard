@@ -1,7 +1,13 @@
 import { redirect } from "react-router-dom";
+import store from "../Store/store";
+import { selectIsLoggedIn } from "../Store/userReducer";
 
 export async function signUpLoader() {
-    
+    if (selectIsLoggedIn(store.getState())) {
+        return redirect("/");
+    }
+
+    return new Response("", {status: 200});
 }
 
 export async function signUpAction({request}) {
@@ -21,7 +27,7 @@ export async function signUpAction({request}) {
             });
 
             if (!response.ok) {
-                throw new Response("Could not sign up, try again.", {status: 500});
+                throw response;
             }
 
             return redirect("/sign-up/success");

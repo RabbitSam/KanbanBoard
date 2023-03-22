@@ -1,6 +1,14 @@
 import { redirect } from "react-router-dom";
 import store from "../Store/store";
-import { signIn } from "../Store/userReducer";
+import { signIn,selectIsLoggedIn } from "../Store/userReducer";
+
+export async function signInLoader() {
+    if (selectIsLoggedIn(store.getState())) {
+        return redirect("/");
+    }
+
+    return new Response("", {status: 200});
+}
 
 export async function signInAction({request}) {
     const formData = await request.formData();
@@ -18,7 +26,7 @@ export async function signInAction({request}) {
             });
 
             if (!response.ok) {
-                throw new Response("Email Address or Password is wrong", {status: 405});
+                throw response;
             }
 
             const data = await response.json();
