@@ -14,7 +14,7 @@ export default function About() {
                         While not as comprehensive or feature complete as Trello, I believe this will be more than useful for me when working on personal projects. <br/>
                         While the website has a lot of possible features to add, which I may revisit it for in the future, at the moment it is feature complete enough for me
                         to move on to other projects. <br/>
-                        If you're a recruiter or a client, you can contact me via <a href="aquibmahmood.com" target="_blank">my website</a> or <a href="mailto:aquibmahmood1637@gmail.com" target="_blank">my email address.</a>
+                        If you're a recruiter or a client, you can contact me via <a href="https://aquibmahmood.com" target="_blank">my website</a> or <a href="mailto:aquibmahmood1637@gmail.com" target="_blank">my email address.</a>
                     </p>
                 </div>
             </div>
